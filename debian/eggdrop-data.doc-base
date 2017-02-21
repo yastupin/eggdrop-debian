@@ -1,0 +1,8 @@
+Document: eggdrop-data
+Title: Eggdrop Documentation
+Author: Robey Pointer, Eggheads Development Team
+Section: Network/Communication
+
+Format: HTML
+Index: /usr/share/doc/eggdrop-data/doc/html/index.html
+Files: /usr/share/doc/eggdrop-data/doc/html/*.html

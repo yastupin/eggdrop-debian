@@ -1,0 +1,535 @@
+eggdrop (1.8.0-1) UNRELEASED; urgency=low
+
+  * New upstream release
+    - SSL support (Closes: #374568)
+  * debian/control:
+    - add libssl-dev build dependency
+    - mark eggdrop-data as Multi-Arch: foreign
+  * debian/copyright: fix lintian warnings
+  * debian/eggdrop-data.doc updated
+  * debian/eggdrop-data.doc-base: updated
+  * debian/eggdrop-data.examples: add eggdrop-basic.conf
+  * debian/eggdrop.install: exclude eggdrop-basic.conf from usr/bin
+  * debian/patches:
+    - 01use_ldflags, fix_kfreebsd_build: merged
+    - gcc-format-string-warnings: removed, fixed upstream
+    - 03openssl_checks: fix openssl detection
+  * debian/rules: remove -fgnu89-inline and --no-automatic-dbgsym
+  * debian/upstream/signing-key.asc: new upstream key
+  * debian/watch:
+    - use http instead of ftp
+    - switch to 1.8 directory
+
+ -- Cédric Barboiron <ced@winkie.fr>  Tue, 21 Feb 2017 14:03:47 +0100
+
+eggdrop (1.6.21-4) UNRELEASED; urgency=low
+
+  * debian/rules: fix build with gcc >= 5
+  * debian/control:
+    - update to standards version 3.9.8
+    - disable automatic dbgsym
+  * debian/copyright: fix dep5-copyright-license-name-not-unique lintian
+    warning
+
+ -- Cédric Barboiron <ced@winkie.fr>  Mon, 20 Feb 2017 11:57:18 +0100
+
+eggdrop (1.6.21-3) unstable; urgency=low
+
+  * debian/rules: fix dh-autoreconf (Closes: #750618)
+
+ -- Cédric Barboiron <ced@winkie.fr>  Thu, 05 Jun 2014 23:58:36 +0200
+
+eggdrop (1.6.21-2) unstable; urgency=low
+
+  * debian/control, debian/rules: use dh-autoreconf
+
+  * debian/source/options: ignore configure|Makefile
+
+  * debian/patches/fix_kfreebsd_build:
+    - use $CC in SHLIB_LD (instead of hardcoded ld)
+
+ -- Cédric Barboiron <ced@winkie.fr>  Sat, 17 May 2014 14:30:58 +0200
+
+eggdrop (1.6.21-1) unstable; urgency=low
+
+  * New upstream release:
+    - debian/patches/00conf_paths.patch: updated
+    - debian/patches/gcc-format-string-warnings: updated
+    - debian/patches/01tcl8.5.10.patch: fixed upstream
+    - debian/eggdrop.install: don't use hardcoded version anymore
+    - Closes: #650718
+
+  * debian/compat: update to level 9
+
+  * debian/control:
+    - set maintainer to Cédric Barboiron (Closes: #698272)
+    - use latest Standards-Version
+    - add debhelper>9 and autotools-dev dependencies
+    - remove cdbs dependency
+    - eggdrop-data: fix the Replaces field, add Breaks
+    - link with tcl8.6
+
+  * debian/rules:
+    - switch to debhelper 9 format
+    - Closes: #724986 as a side effect
+    - follow new tcl/tk policy (no more /usr/lib/libtcl.so)
+
+  * debian/copyright
+    - use copyright-format 1.0
+    - list exceptions
+    - explain why BSD-4-clause portion from University of California is
+      acceptable in src/compat/inet_aton.c (see
+      ftp://ftp.cs.berkeley.edu/pub/4bsd/README.Impt.License.Change)
+      (Closes: #744267)
+
+  * debian/watch: version 3, plus check pgp signature
+
+  * debian/patches/01use_ldflags.patch: propagate LDFLAGS for eggdrop and
+    modules (Closes: #668091)
+
+  * debian/patches/02language_dir.patch: set default language directory
+    (Closes: #661572)
+
+ -- Cédric Barboiron <ced@winkie.fr>  Sat, 26 Apr 2014 13:16:04 +0200
+
+eggdrop (1.6.20-2) unstable; urgency=low
+
+  * QA upload, set maintainer to Debian QA group
+  * Enable hardened build flags (Closes: #668091)	
+
+ -- Moritz Muehlenhoff <jmm@debian.org>  Sat, 04 Jan 2014 15:53:07 +0100
+
+eggdrop (1.6.20-1) unstable; urgency=high
+
+  * NMUs acknowledged; thanks guys!
+  
+  * Switched to dpkg-source 3.0 (quilt) format.
+    - Dropped CDBS's very handy simple-patchsys.mk.
+  
+  * With a new upstream release comes a pristine tarball (Closes: #550507).
+    - debian/patches/00conf_paths.patch: updated.
+    - debian/patches/01version.patch: dropped, fixed upstream.
+    - debian/patches/02_incompCVE-2007-2807.patch: also fixed.
+    - debian/eggdrop-data.docs: updated; some files were relocated.
+  
+  * debian/compat: debhelper compatibility level bumped to 8, in order to make
+    lintian and debhelper itself happy. Build-dependencies updated accordingly.
+  
+  * debian/control:
+    - bumped Standards-Version to 3.9.2, with no changes.
+    - made some cosmetic changes to the Maintainer field.
+    - added ${misc:Depends} to the dependencies of both packages. Unneeded for
+      the time being, but who knows... (Closes: #512501).
+  
+  * debian/copyright: updated for the 2010 copyright notices.
+  
+  * debian/patches/01tcl8.5.10.patch: grabbed from upstream CVS in order to fix
+    a startup crash caused by unexpected behaviour in Tcl 8.5.10 (which is
+    already in testing, hence the urgency). Thanks to thommey, with our sincere
+    apologies for lagging behind (Closes: #635274).
+  
+  * debian/rules:
+    - No longer pass --enable-tcl-threads as an extra flag, this is now handled
+      differently upstream.
+
+ -- Guilherme de Siqueira Pastore <gpastore@debian.org>  Sun, 24 Jul 2011 13:46:59 -0300
+
+eggdrop (1.6.19-1.2) unstable; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * Apply upstream patch to fix incomplete patch for CVE-2007-2807,
+    buffer can still overflow in case of strlen(ctcpbuf) returning
+    zero (Closes: #427157).
+
+ -- Nico Golde <nion@debian.org>  Fri, 15 May 2009 13:43:17 +0200
+
+eggdrop (1.6.19-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Use patch from Julian Mehnle <julian@mehnle.net> to enforce building
+    egggrop with Tcl thread support. Thanks for the patch. (Closes: #487541)
+
+ -- Marc 'HE' Brockschmidt <he@debian.org>  Sat, 06 Sep 2008 21:19:08 +0200
+
+eggdrop (1.6.19-1) unstable; urgency=low
+
+  * New upstream release.
+
+  * debian/control:
+    - bumped Standards-Version to 3.7.3;
+    - made "Homepage" a field in the source stanza;
+    - changed the capitalization of "Tcl" in the package description to make
+      lintian happy;
+    - bumped build-dependency on Tcl to 8.5, as per upstream recommendation
+      (Closes: #473035).
+
+  * debian/copyright:
+    - added appropriate copyright notices.
+
+  * debian/patches:
+    - 01version.patch: added; show the correct version number;
+    - 01_CVE-2007-2807_srvmsg.patch: applied upstream, dropped.
+
+ -- Guilherme de S. Pastore <gpastore@debian.org>  Fri, 30 May 2008 16:20:00 -0300
+
+eggdrop (1.6.18-1.1) unstable; urgency=high
+
+  * Non-maintainer upload by secure testing team.
+  * Fix for CVE-2007-2807 (01_CVE-2007-2807_srvmsg.patch) (Closes: #427157).
+
+ -- Nico Golde <nion@debian.org>  Sun, 12 Aug 2007 16:42:31 +0200
+
+eggdrop (1.6.18-1) unstable; urgency=low
+
+  * New upstream release (Closes: #369678).
+    - debian/patches/00conf_paths.patch: updated.
+  
+  * debian/control:
+    - updated maintainer address.
+    - replace ${Source-Version} with ${source:Version}. Yay binNMUs!
+
+  * debian/copyright: updated FSF's address.
+
+ -- Guilherme de S. Pastore <gpastore@debian.org>  Fri,  1 Sep 2006 18:21:45 -0300
+
+eggdrop (1.6.17-3) unstable; urgency=medium
+
+  * Rewrote long description
+  * 00conf_paths.patch:
+    - Change file paths in example configuration file
+      Thanks to Gustavo Noronha Silva <kov@debian.org>
+  * Fixed mistake in README.Debian, once again due to the split up
+    Thanks to Martin Braure de Calignon (Closes: #273933)
+  
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Tue, 19 Oct 2004 01:57:51 -0200
+
+eggdrop (1.6.17-2) unstable; urgency=high
+
+  * Added versioned Replaces: for eggdrop (>= 1.6.16-2). In other words,
+    for versions earlier to the split up, in order to allow smooth
+    upgrades (Closes: #271079)
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Sun, 12 Sep 2004 10:04:02 -0300
+
+eggdrop (1.6.17-1) unstable; urgency=low
+
+  * New upstream release
+    - debian/patches/eggdrop.1.diff incorporated upstream, removed.
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Wed, 25 Aug 2004 10:32:26 -0300
+
+eggdrop (1.6.16-5) unstable; urgency=low
+
+  * debian/control:
+    - Updated to Standards-Version 3.6.1.1
+  * debian/copyright:
+    - Fixed lots of crazy alignment problems
+  * debian/rules:
+    - Included simple-patchsys.mk from CDBS
+  * debian/patches/eggdrop.1.diff:
+    - Fix error in manpage that prevented a line from being shown
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Tue, 27 Jul 2004 11:41:53 -0300
+
+eggdrop (1.6.16-4) unstable; urgency=low
+
+  * Fixed location of some files after split up
+  * Fixed debian/rules so build doesn't fail if -B is passed
+    to dpkg-buildpackage (Closes: #258418)
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Fri,  9 Jul 2004 10:55:48 -0300
+
+eggdrop (1.6.16-3) unstable; urgency=low
+
+  * Added Homepage to eggdrop's description
+  * Split eggdrop into eggdrop and eggdrop-data
+  * Changed paths on example configuration files
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Fri, 18 Jun 2004 09:30:35 -0300
+
+eggdrop (1.6.16-2) unstable; urgency=high
+
+  * Fixed typo on README.Debian
+  * Fixed hyphens in manual page
+  * Converted debian/rules to CDBS
+  * Set path to binary on example config file
+  * Changed LANGDIR on src/eggdrop.h (Closes: #254824)
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Thu, 17 Jun 2004 09:15:28 -0300
+
+eggdrop (1.6.16-1) unstable; urgency=low
+
+  * New upstream release
+  * Cleaned up debian/rules and debian/watch
+  * Compiled with HANDLEN 9 again (Closes: #241285)
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Thu,  3 Jun 2004 11:25:44 -0300
+
+eggdrop (1.6.15-2) unstable; urgency=high
+
+  * Applied official patch to fix share.mod security bug 
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Fri, 16 Apr 2004 17:23:37 -0300
+
+eggdrop (1.6.15-1) unstable; urgency=low
+
+  * New maintainer
+  * Acknowledge NMU (Closes: #173371, #202199)
+  * debian/rules
+  - No longer exports DH_COMPAT (new policy)
+  - Changed destination of files (new policy)
+  - Cleaned up (unnecessary things ripped out)
+  - Changed binary filename from eggdrop-1.6.15 to eggdrop
+  - Now moves the files eggdrop's makefile misplaces to the correct
+    location (no more makefile patches)
+  * debian/copyright
+  - Extended copyright (GPL) information
+  - Updated "Upstream Authors" field, as requested by EggHeads
+  * debian/control
+  - Changed package's long description
+  - Updated Standards-Version to 3.6.1
+  - Specified version of build dependency on debhelper
+  * Compiled eggdrop with HANDLEN 30 (Closes: #213704)
+  * Removed unused patches
+  * Updated README.Debian file
+  * Removed empty directory doc/html/chat
+  * Upstream changelog is now included in the package
+
+ -- Guilherme de S. Pastore <gpastore@colband.com.br>  Fri, 19 Mar 2004 10:11:20 -0300
+
+eggdrop (1.6.15-0.1) unstable; urgency=medium
+
+  * NMU by Elrond <elrond+debian.org@samba-tng.org>, checked and uploaded
+    by Joshua Kwan
+
+  * okayed by maintainer, see Bug#173371
+  * New upstream release (Closes: #173371, #202199)
+    + many security related fixes.
+    + eggdrop.{simple,advanced,complete}.conf replaced by
+      one eggdrop.conf.
+  * Move eggdrop.conf.gz into doc/eggdrop/examples/.
+    Change README.Debian accordingly.
+  * Drop the whole Makefile patchery and move installed
+    files in debian/rules:install around.
+    Fixes: motd and banner should be in /usr/share/eggdrop/text/. (Even
+           configs from older versions expected those files there.)
+  * Move (unused) egp.patch into debian/patches/.
+  * Small other fixes.
+  * Bump Standards-Version to 3.5.6.0.
+    more complicated changes are warranted to bump the standards-version
+    any higher, hence they're not included in NMU
+
+ -- Joshua Kwan <joshk@triplehelix.org>  Sat, 28 Feb 2004 22:49:28 -0800
+
+eggdrop (1.6.10-1) unstable; urgency=low
+
+  * New upstream release (Closes: #142075)
+
+ -- Ian Eure <ieure@debian.org>  Tue, 16 Apr 2002 13:51:01 -0700
+
+eggdrop (1.6.8-2) unstable; urgency=low
+
+  * Don't use utf8 conversion routines, our tcl doesn't have
+	  them. (Closes: #131342)
+
+ -- Ian Eure <ieure@debian.org>  Mon, 28 Jan 2002 17:00:03 -0800
+
+eggdrop (1.6.8-1) unstable; urgency=low
+
+  * New upstream release
+  * Apply patch from CVS to fix SIGBUS crashes on sparcs. (Closes: #103635)
+  * Fix speeling error in description. (Closes: #124595)
+
+ -- Ian Eure <ieure@debian.org>  Mon, 28 Jan 2002 09:55:35 -0800
+
+eggdrop (1.6.6-3) unstable; urgency=low
+
+  * don't force use of gcc 3.0, just use the default.
+
+ -- Ian Eure <ieure@debian.org>  Sat, 15 Dec 2001 15:00:41 -0800
+
+eggdrop (1.6.6-2) unstable; urgency=low
+
+  * compile eggdrop with gcc 3.0; 2.95.x seems to have problems on
+	  sparc. (closes: #103635)
+
+ -- Ian Eure <ieure@debian.org>  Wed, 12 Dec 2001 16:34:56 -0800
+
+eggdrop (1.6.6-1) unstable; urgency=low
+
+  * new upstream release
+  * removed ugly hack from 1.6.4-1 in src/mod/dns.mod/configure.in to get
+		libresolv linked in, since it seems to work once more. strange.
+
+ -- Ian Eure <ieure@debian.org>  Mon,  6 Aug 2001 20:25:35 -0700
+
+eggdrop (1.6.4-2) unstable; urgency=low
+
+  * applied patch to fix crash with unicode channel names. (closes: #99638)
+
+ -- Ian Eure <ieure@debian.org>  Sun,  1 Jul 2001 03:50:14 -0700
+
+eggdrop (1.6.4-1) unstable; urgency=low
+
+  * New upstream release
+  * remove broken test for res_init, since it's part of glibc. (closes: #94330)
+
+ -- Ian Eure <ieure@debian.org>  Sun, 29 Apr 2001 22:24:05 -0700
+
+eggdrop (1.6.3-1) unstable; urgency=low
+
+  * New upstream release
+  * removed dh_suidregister from debian/rules
+  * `INSTALL' isn't installed with the rest of the upstream docs.
+
+ -- Ian Eure <ieure@debian.org>  Fri,  9 Mar 2001 16:39:14 -0800
+
+eggdrop (1.6.2-2) unstable; urgency=low
+
+  * compiled against tcl8.3.  (closes: #81082)
+  * fixed broken build.
+
+ -- Ian Eure <ieure@debian.org>  Wed, 14 Feb 2001 10:30:42 -0800
+
+eggdrop (1.6.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Ian Eure <ieure@debian.org>  Tue,  6 Feb 2001 13:38:42 -0800
+
+eggdrop (1.6.1-4) unstable; urgency=low
+
+  * fixed botscript path in botchk & autobotchk (closes: #79160)
+  * fixed misleading error messages in autobotchk (closes: #79161)
+
+ -- Ian Eure <ieure@debian.org>  Sun, 17 Dec 2000 22:07:44 -0800
+
+eggdrop (1.6.1-3) unstable; urgency=low
+
+  * added debhelper to Build-Depends. (closes: #78747)
+  * updated source url in copyright
+
+ -- Ian Eure <ieure@debian.org>  Mon,  4 Dec 2000 09:09:09 -0800
+
+eggdrop (1.6.1-2) unstable; urgency=low
+
+  * removed versions from Build-Depends, since tcl-dev and libz-dev
+	  are Provide:'d. (closes: #78095)
+
+ -- Ian Eure <ieure@debian.org>  Mon, 27 Nov 2000 11:39:49 -0800
+
+eggdrop (1.6.1-1) unstable; urgency=low
+
+  * New upstream release
+  * fixed another typo in README.Debian
+
+ -- Ian Eure <ieure@debian.org>  Sat, 25 Nov 2000 12:23:06 -0800
+
+eggdrop (1.6.0-2) unstable; urgency=low
+
+  * fixed README.Debian to point to the correct eggdrop.simple.conf.
+    (closes: #77919)
+  * autobotchk looks for /usr/share/eggdrop/help & /usr/bin/eggdrop
+	  instead of $dir/help & $dir/eggdrop. (closes: #77931)
+
+ -- Ian Eure <ieure@debian.org>  Fri, 24 Nov 2000 19:42:36 -0800
+
+eggdrop (1.6.0-1) unstable; urgency=low
+
+  * new upstream version. (closes: #57452)
+  * added Build-Depends (closes: #70292)
+  * new maintainer (closes: #76182, #75075, #68067)
+  * FHS compliance; binary modules are in /usr/lib/eggdrop/modules,
+		machine-independent data is in /usr/share/eggdrop
+
+ -- Ian Eure <ieure@debian.org>  Fri, 17 Nov 2000 11:43:49 -0800
+	
+eggdrop (1.3.28-2) unstable; urgency=low
+
+  * Erm, let's try that again .. should actually work this time.  
+    (Closes: #47779).
+  * Remove *.rej and *.orig files on clean 
+  * Don't use /usr/doc /and/ /usr/share/doc. (closes: #46562)
+
+ -- Edward Brocklesby <ejb@debian.org>  Fri, 22 Oct 1999 19:24:11 +0100
+
+eggdrop (1.3.28-1) unstable; urgency=low
+
+  *  New Upstream Version.
+
+ -- Edward Brocklesby <ejb@debian.org>  Mon, 27 Sep 1999 18:38:06 +0100
+
+eggdrop (1.3.23-2) unstable; urgency=low
+
+  * Eggdrop binary is executable again, closes: #31694, #31781.
+  * Improved lintianability.
+
+ -- Johnie Ingram <johnie@debian.org>  Mon,  1 Feb 1999 09:20:43 -0500
+
+eggdrop (1.3.23-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Johnie Ingram <johnie@debian.org>  Mon,  4 Jan 1999 02:15:42 -0500
+
+eggdrop (1.3.22-1) unstable; urgency=low
+
+  * New upstream version.
+  * Added patches from Darren (#22930) to eggdrop.conf, which is now a
+    conffile (#22951).
+
+ -- Johnie Ingram <johnie@debian.org>  Sat, 14 Nov 1998 19:35:11 -0500
+
+eggdrop (1.3.19-2) frozen unstable; urgency=low
+
+  * Linked with the tcl8 which uses libncurses4.
+
+ -- Johnie Ingram <johnie@debian.org>  Sat, 14 Nov 1998 19:14:35 -0500
+
+eggdrop (1.3.19-1) unstable; urgency=low
+
+  * New upstream version.
+  * Fixed lintian errors.
+  * Corrected address of FSF in copyright file.
+
+ -- Johnie Ingram <johnie@debian.org>  Sun, 30 Aug 1998 01:47:39 -0400
+
+eggdrop (1.3.18-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Johnie Ingram <johnie@debian.org>  Mon, 20 Jul 1998 13:50:37 -0400
+
+eggdrop (1.3.14-2) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Johnie Ingram <johnie@debian.org>  Thu, 21 May 1998 14:06:10 -0400
+
+eggdrop (1.3.13-1) unstable; urgency=low
+
+  * New upstream version.
+  * Converted from debmake to debhelper packaging technology.
+  * Updated to Standards-Version 2.4.1.0.
+
+ -- Johnie Ingram <johnie@debian.org>  Sun, 19 Apr 1998 20:38:55 -0400
+
+eggdrop (1.3.0-1) unstable; urgency=low
+
+  * New upstream version (almost released it, but didn't).
+
+ -- Johnie Ingram <johnie@debian.org>  Wed, 12 Nov 1997 22:55:23 -0500
+
+eggdrop (1.2.0-0) local; urgency=low
+
+  * New upstream version (pristine source).
+
+ -- Johnie Ingram <johnie@debian.org>  Thu, 11 Sep 1997 12:47:44 -0400
+
+eggdrop (1.1.5-1) local; urgency=low
+
+  * New package (never uploaded).
+
+ -- Johnie Ingram <johnie@debian.org>  Wed,  9 Jul 1997 00:29:18 -0400
+
+

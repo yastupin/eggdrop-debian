@@ -1,0 +1,11 @@
+--- a/aclocal.m4
++++ b/aclocal.m4
+@@ -1587,7 +1587,7 @@
+     if test -z "$SSL_LIBS"; then
+       AC_CHECK_LIB(ssl, SSL_accept, , [havessllib="no"], [-lcrypto])
+       AC_CHECK_LIB(crypto, X509_digest, , [havessllib="no"], [-lssl])
+-      AC_CHECK_FUNCS([EVP_md5 EVP_sha1 a2i_IPADDRESS hex_to_string string_to_hex], , [[
++      AC_CHECK_FUNCS([EVP_md5 EVP_sha1 a2i_IPADDRESS OPENSSL_buf2hexstr OPENSSL_hexstr2buf], , [[
+         havessllib="no"
+         break
+       ]])

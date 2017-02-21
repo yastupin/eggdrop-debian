@@ -1,0 +1,151 @@
+--- a/eggdrop-basic.conf
++++ b/eggdrop-basic.conf
+@@ -1,4 +1,4 @@
+-#! /path/to/executable/eggdrop
++#!/usr/bin/eggdrop
+ # ^- This should contain a fully qualified path to your Eggdrop executable.
+ 
+ ## This is the basic version of Eggdrop's config file and contains only the
+@@ -198,7 +198,7 @@
+ 
+ # Specify here where Eggdrop should look for help files. Don't modify this
+ # setting unless you know what you're doing!
+-set help-path "help/"
++set help-path "/usr/share/eggdrop/help/"
+ 
+ ##### BOTNET/DCC/TELNET #####
+ 
+@@ -302,7 +302,7 @@
+ ## If you run the bot from the compilation directory, you will want to set
+ ## this to "". If you use 'make install' (like all good kiddies do ;), this
+ ## is a fine default. Otherwise, use your head :)
+-set mod-path "modules/"
++set mod-path "/usr/lib/eggdrop/modules/"
+ 
+ #### DNS MODULE ####
+ 
+@@ -381,19 +381,19 @@
+ ## source scripts/script.tcl
+ ## The 3 scripts below are default and shouldn't be removed.
+ 
+-source scripts/alltools.tcl
+-source scripts/action.fix.tcl
+-source scripts/dccwhois.tcl
++source /usr/share/eggdrop/scripts/alltools.tcl
++source /usr/share/eggdrop/scripts/action.fix.tcl
++source /usr/share/eggdrop/scripts/dccwhois.tcl
+ 
+ ## This script provides many useful informational functions, like setting
+ ## users' URLs, e-mail address, ICQ numbers, etc. You can modify it to add
+ ## extra entries.
+-source scripts/userinfo.tcl
++source /usr/share/eggdrop/scripts/userinfo.tcl
+ loadhelp userinfo.help
+ 
+ ## Use this script for Tcl and Eggdrop backwards compatibility.
+ ## NOTE: This can also cause problems with some newer scripts.
+-#source scripts/compat.tcl
++#source /usr/share/eggdrop/scripts/compat.tcl
+ 
+ ## This next line checks if eggdrop is being executed from the source directory, do not remove it
+ if {[file exists aclocal.m4]} { die {You are attempting to run Eggdrop from the source directory. Please finish installing Eggdrop by running "make install" and run it from the install location.} }
+@@ -408,11 +408,11 @@
+   switch -- ${net-type} {
+     "0" {
+       # EFnet
+-      source scripts/quotepong.tcl
++      source /usr/share/eggdrop/scripts/quotepong.tcl
+     }
+     "2" {
+       # Undernet
+-      source scripts/quotepass.tcl
++      source /usr/share/eggdrop/scripts/quotepass.tcl
+     }
+   }
+ }
+--- a/eggdrop.conf
++++ b/eggdrop.conf
+@@ -1,4 +1,4 @@
+-#! /path/to/executable/eggdrop
++#!/usr/bin/eggdrop
+ # ^- This should contain a fully qualified path to your Eggdrop executable.
+ #
+ # This is a sample Eggdrop configuration file which includes all possible
+@@ -236,22 +236,22 @@
+ 
+ # Specify here where Eggdrop should look for help files. Don't modify this
+ # setting unless you know what you're doing!
+-set help-path "help/"
++set help-path "/usr/share/eggdrop/help/"
+ 
+ # Specify here where Eggdrop should look for text files. This is used for
+ # certain Tcl and DCC commands.
+-set text-path "text/"
++set text-path "/usr/share/eggdrop/text/"
+ 
+ # Set here a place to store temporary files.
+ set temp-path "/tmp"
+ 
+ # The MOTD (Message Of The day) is displayed when people dcc chat or telnet
+ # to the bot. Look at doc/TEXT-SUBSTITUTIONS for options.
+-set motd "text/motd"
++set motd "/usr/share/eggdrop/text/motd"
+ 
+ # This banner will be displayed on telnet connections. Look at
+ # doc/TEXT-SUBSTITUTIONS for options.
+-set telnet-banner "text/banner"
++set telnet-banner "/usr/share/eggdrop/text/banner"
+ 
+ # This specifies what permissions the user, channel, and notes files should
+ # be set to. The octal values are the same as for the chmod system command.
+@@ -589,7 +589,7 @@
+ # If you run the bot from the compilation directory, you will want to set
+ # this to "". If you use 'make install' (like all good kiddies do ;), this
+ # is a fine default. Otherwise, use your head :)
+-set mod-path "modules/"
++set mod-path "/usr/lib/eggdrop/modules/"
+ 
+ 
+ #### BLOWFISH MODULE ####
+@@ -1509,22 +1509,22 @@
+ #
+ # source scripts/script.tcl
+ 
+-source scripts/alltools.tcl
+-source scripts/action.fix.tcl
++source /usr/share/eggdrop/scripts/alltools.tcl
++source /usr/share/eggdrop/scripts/action.fix.tcl
+ 
+ # This script enhances Eggdrop's built-in dcc '.whois' command to allow all
+ # users to '.whois' their own handle.
+-source scripts/dccwhois.tcl
++source /usr/share/eggdrop/scripts/dccwhois.tcl
+ 
+ # This script provides many useful informational functions, like setting
+ # users' URLs, e-mail address, ICQ numbers, etc. You can modify it to add
+ # extra entries.
+-source scripts/userinfo.tcl
++source /usr/share/eggdrop/scripts/userinfo.tcl
+ loadhelp userinfo.help
+ 
+ # Use this script for Tcl and Eggdrop backwards compatibility.
+ # NOTE: This can also cause problems with some newer scripts.
+-#source scripts/compat.tcl
++#source /usr/share/eggdrop/scripts/compat.tcl
+ 
+ # A few IRC networks (EFnet and Undernet) have added some simple checks to
+ # prevent drones from connecting to the IRC network. While these checks are
+@@ -1536,11 +1536,11 @@
+   switch -- ${net-type} {
+     "0" {
+       # EFnet
+-      source scripts/quotepong.tcl
++      source /usr/share/eggdrop/scripts/quotepong.tcl
+     }
+     "2" {
+       # Undernet
+-      source scripts/quotepass.tcl
++      source /usr/share/eggdrop/scripts/quotepass.tcl
+     }
+   }
+ }

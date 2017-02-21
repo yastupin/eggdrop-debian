@@ -1,0 +1,23 @@
+eggdrop for Debian
+----------------------
+
+Quick start:
+
+1. Create an account for the bot (not strictly necessary,
+   but recommended).
+2. Copy /usr/share/doc/eggdrop-data/examples/eggdrop.conf.gz
+   to the bot's directory
+3. Uncompress and edit the configuration file completely
+4. Make the file executable (chmod +x eggdrop.conf) and
+   run it with -m ('./eggdrop.conf -m')
+3. Follow the instructions for identifying yourself as
+   the bot owner
+4. Remember not to use -m next time you run eggdrop
+
+When converting old eggdrop.conf files, make sure you specify an absolute path
+to any scripts or help files it needs to load. You may symlink the scripts and
+help directories in the bot's home directory as an alternative, if you wish.
+
+Eggdrop shouldn't (and won't) ever be run as super-user (root).
+
+ -- Guilherme de S. Pastore <gpastore@debian.org>, Thu Jun 17 09:29:43 2004

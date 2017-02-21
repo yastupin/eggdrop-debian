@@ -1,0 +1,42 @@
+--- a/aclocal.m4
++++ b/aclocal.m4
+@@ -711,7 +711,7 @@
+       LINUX="yes"
+       MOD_LD="$CC"
+       SHLIB_CC="$CC -fPIC"
+-      SHLIB_LD="$CC -shared -nostartfiles"
++      SHLIB_LD="$CC -shared -nostartfiles $LDFLAGS"
+     ;;
+     Lynx)
+       # do nothing
+@@ -761,7 +761,7 @@
+     *BSD)
+       # FreeBSD/OpenBSD/NetBSD
+       SHLIB_CC="$CC -fPIC"
+-      SHLIB_LD="$CC -shared"
++      SHLIB_LD="$CC -shared $LDFLAGS"
+     ;;
+     Darwin)
+       # Mac OS X
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -36,7 +36,7 @@
+ 	@echo "Linking eggdrop $(EGGBUILD)."
+ 	@echo ""
+ 	@touch mod/mod.xlibs
+-	$(LD) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
++	$(LD) $(LDFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
+ 	$(STRIP) ../$(EGGEXEC)
+ 	@echo ""
+ 	@echo "Successful compile: $(EGGEXEC)"
+--- a/src/mod/Makefile.in
++++ b/src/mod/Makefile.in
+@@ -33,7 +33,7 @@
+   --top_srcdir=$(top_srcdir)
+ egg_ac_parameters = @egg_ac_parameters@
+ 
+-MAKE_MOD = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'LD=$(LD)' \
++MAKE_MOD = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'LD=$(LD) $(LDFLAGS)' \
+ 'STRIP=$(STRIP)' 'CFLAGS=$(MOD_CFLAGS)' 'CPPFLAGS=$(MOD_CPPFLAGS)' \
+ 'XLIBS=$(XLIBS)' 'MOD_EXT=$(MOD_EXT)' 'SHELL=$(SHELL)' \
+ 'MODULE_XLIBS=$(MODULE_XLIBS)'

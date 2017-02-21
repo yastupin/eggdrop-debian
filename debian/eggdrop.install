@@ -1,0 +1,3 @@
+debian/tmp/usr/eggdrop usr/bin
+debian/tmp/usr/eggdrop-1.* usr/bin
+debian/tmp/usr/modules/* usr/lib/eggdrop/modules/

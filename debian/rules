@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ --with autotools_dev,autoreconf
+
+override_dh_auto_configure:
+	dh_auto_configure -- --with-tcllib=/usr/lib/$(DEB_HOST_MULTIARCH)/libtcl8.6.so --with-tclinc=/usr/include/tcl8.6/tcl.h
+	make config
+
+override_dh_auto_install:
+	make install DEST=$$(pwd)/debian/tmp/usr
+	rm $$(pwd)/debian/tmp/usr/scripts/autobotchk
+	rm $$(pwd)/debian/tmp/usr/scripts/sentinel.tcl

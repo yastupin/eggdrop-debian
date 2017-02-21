@@ -1,0 +1,4 @@
+debian/tmp/usr/help/* usr/share/eggdrop/help/
+debian/tmp/usr/language/* usr/share/eggdrop/language/
+debian/tmp/usr/scripts/* usr/share/eggdrop/scripts/
+debian/tmp/usr/text/* usr/share/eggdrop/text/

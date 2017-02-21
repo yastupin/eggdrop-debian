@@ -1,0 +1,2 @@
+# eggdrop-1.x.xx is a link to eggdrop. manpage eggdrop(1) is present
+eggdrop: binary-without-manpage usr/bin/eggdrop-*

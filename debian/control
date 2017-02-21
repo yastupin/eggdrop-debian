@@ -1,0 +1,37 @@
+Source: eggdrop
+Section: net
+Priority: extra
+Maintainer: Cédric Barboiron <ced@winkie.fr>
+Build-Depends: tcl8.6-dev, libz-dev, debhelper (>= 9.20160114), autotools-dev, dh-autoreconf, libssl-dev
+Build-Conflicts: autoconf2.13, automake1.4
+Standards-Version: 3.9.8
+Homepage: http://www.eggheads.org/
+
+Package: eggdrop
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, eggdrop-data (= ${source:Version})
+Description: Advanced IRC Robot
+ Eggdrop is an IRC bot written in C, which sits on channels and takes
+ protective measures, such as preventing it from being taken over (in
+ the few ways that anything can), recognizing banned users to reject
+ them, recognizing privileged users to give them operator status,
+ punishing users for things like flooding, among innumerable others.
+ .
+ All of this is completely configurable, and can be disabled or enabled
+ as you wish in the configuration file. Also, it's very easy to expand
+ and customize with Tcl scripts and C modules, making it possible to
+ adapt Eggdrop to any special need you might have.
+
+Package: eggdrop-data
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Breaks: eggdrop (<< 1.6.16-3)
+Replaces: eggdrop (<< 1.6.16-3)
+Description: Architecture independent files for eggdrop
+ This package contains all the files that eggdrop places on /usr/share.
+ These files are not specific to a single processor architecture once
+ the package is built, so a single package can serve all the archs
+ Debian supports.
+ .
+ This package is not useful at all if eggdrop is not installed.
