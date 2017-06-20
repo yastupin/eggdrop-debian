@@ -107,7 +107,7 @@
  
  
  #### BLOWFISH MODULE ####
-@@ -1509,22 +1509,22 @@
+@@ -1511,22 +1511,22 @@
  #
  # source scripts/script.tcl
  
@@ -135,7 +135,7 @@
  
  # A few IRC networks (EFnet and Undernet) have added some simple checks to
  # prevent drones from connecting to the IRC network. While these checks are
-@@ -1536,11 +1536,11 @@
+@@ -1538,11 +1538,11 @@
    switch -- ${net-type} {
      "0" {
        # EFnet

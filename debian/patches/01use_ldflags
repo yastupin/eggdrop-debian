@@ -1,6 +1,6 @@
 --- a/aclocal.m4
 +++ b/aclocal.m4
-@@ -711,7 +711,7 @@
+@@ -755,7 +755,7 @@
        LINUX="yes"
        MOD_LD="$CC"
        SHLIB_CC="$CC -fPIC"
@@ -9,7 +9,7 @@
      ;;
      Lynx)
        # do nothing
-@@ -761,7 +761,7 @@
+@@ -805,7 +805,7 @@
      *BSD)
        # FreeBSD/OpenBSD/NetBSD
        SHLIB_CC="$CC -fPIC"
