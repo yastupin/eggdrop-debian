@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installing Eggdrop &mdash; Eggdrop 1.8.0 documentation</title>
+    <title>Installing Eggdrop &mdash; Eggdrop 1.8.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/eggdrop.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.0',
+        VERSION:     '1.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,19 +24,19 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Eggdrop 1.8.0 documentation" href="../index.html" />
+    <link rel="top" title="Eggdrop 1.8.1 documentation" href="../index.html" />
     <link rel="up" title="&lt;no title&gt;" href="index.html" />
     <link rel="next" title="Frequently Asked Questions" href="faq.html" />
     <link rel="prev" title="README" href="readme.html" /> 
   </head>
-  <body>
+  <body role="document">
     <div class="header-wrapper">
       <div class="header">
           <p class="logo"><a href="../index.html">
             <img class="logo" src="../_static/eggman.png.gif" alt="Logo"/>
           </a></p>
         <div class="headertitle"><a
-          href="../index.html">Eggdrop 1.8.0 documentation</a></div>
+          href="../index.html">Eggdrop 1.8.1 documentation</a></div>
         <div class="rel">
           <a href="readme.html" title="README"
              accesskey="P">previous</a> |
@@ -52,7 +52,7 @@
             
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <p>Compilation and Installation of Eggdrop
 Last revised: July 24, 2004</p>
@@ -63,6 +63,16 @@ with UNIX or Eggdrop, READ THE README FILE NOW! This file is only for
 experienced users.</p>
 <p>For more information on compiling Eggdrop, see the Compile Guide in
 doc/COMPILE-GUIDE (and of course, the README FILE).</p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>What is Eggdrop?</li>
+<li>Quick Startup</li>
+<li>Cygwin Requirements (Windows)</li>
+<li>Modules</li>
+<li>Frequently Asked Questions</li>
+</ol>
+</div>
 <div class="section" id="what-is-eggdrop">
 <h2>What is Eggdrop?<a class="headerlink" href="#what-is-eggdrop" title="Permalink to this headline">¶</a></h2>
 <p>Please, read the README file before attempting to set up this bot. This
@@ -181,6 +191,17 @@ entirety, go take a long walk off a short pier.</p>
 </li>
 </ol>
 </div>
+<div class="section" id="cygwin-requirements-windows">
+<h2>Cygwin Requirements (Windows)<a class="headerlink" href="#cygwin-requirements-windows" title="Permalink to this headline">¶</a></h2>
+<p>Eggdrop requires the following packages to be added from the Cygwin
+installation tool prior to compiling:</p>
+<div class="highlight-python"><div class="highlight"><pre>Interpreters: tcl, tcl-devel
+Net:          openssl-devel
+Devel:        autoconf, gcc-core, git, make
+Utils:        diffutils
+</pre></div>
+</div>
+</div>
 <div class="section" id="modules">
 <h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
 <p>Modules are small pieces of code that can either be compiled into the
@@ -231,7 +252,7 @@ the README file. If not, then READ IT!&amp;&#64;#%&#64;!</p>
 <p>Have fun with Eggdrop!</p>
 <blockquote>
 <div>Copyright (C) 1997 Robey Pointer
-Copyright (C) 1999 - 2016 Eggheads Development Team</div></blockquote>
+Copyright (C) 1999 - 2017 Eggheads Development Team</div></blockquote>
 </div>
 </div>
 
@@ -313,10 +334,10 @@ Copyright (C) 1999 - 2016 Eggheads Development Team</div></blockquote>
 
         <div class="right">
           
-    <div class="footer">
-        &copy; Copyright 2016, Eggheads.
-      Last updated on Aug 30, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Eggheads.
+      Last updated on Mar 26, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
     </div>
         </div>
         <div class="clearer"></div>

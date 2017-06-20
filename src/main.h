@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,10 @@
 #endif
 
 #include "lush.h"
+
+#ifndef TCL_PATCH_LEVEL
+#  define TCL_PATCH_LEVEL "*unknown*"
+#endif
 
 #if defined(HAVE_TCL_NOTIFIER_INIT)
 #  define REPLACE_NOTIFIER

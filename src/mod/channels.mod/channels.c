@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -151,7 +151,7 @@ static void set_mode_protect(struct chanset_t *chan, char *set)
       if (pos) {
         s1 = newsplit(&set);
         if (s1[0])
-          strcpy(chan->key_prot, s1);
+          strncpyz(chan->key_prot, s1, sizeof chan->key_prot);
       }
       break;
     }
@@ -939,7 +939,7 @@ char *channels_start(Function *global_funcs)
 {
   global = global_funcs;
 
-  gfld_chan_thr = 10;
+  gfld_chan_thr = 15;
   gfld_chan_time = 60;
   gfld_deop_thr = 3;
   gfld_deop_time = 10;
@@ -947,8 +947,10 @@ char *channels_start(Function *global_funcs)
   gfld_kick_time = 10;
   gfld_join_thr = 5;
   gfld_join_time = 60;
-  gfld_ctcp_thr = 5;
+  gfld_ctcp_thr = 3;
   gfld_ctcp_time = 60;
+  gfld_nick_thr = 5;
+  gfld_nick_time = 60;
   global_idle_kick = 0;
   global_aop_min = 5;
   global_aop_max = 30;
@@ -974,7 +976,7 @@ char *channels_start(Function *global_funcs)
          "-bitch "
          "+greet "
          "+protectops "
-         "+statuslog "
+         "-statuslog "
          "-revenge "
          "-secret "
          "-autovoice "

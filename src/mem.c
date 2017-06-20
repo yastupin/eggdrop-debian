@@ -5,7 +5,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -375,7 +375,7 @@ void *n_realloc(void *ptr, int size, const char *file, int line)
   if (i == lastused) {
     putlog(LOG_MISC, "*", "*** ATTEMPTING TO REALLOC NON-MALLOC'D PTR: %s (%d)",
            file, line);
-    return NULL;
+    /* If we reach this, realloc returned a pointer anyway. So we use it. */
   }
   memused -= memtbl[i].size;
   memtbl[i].ptr = x;

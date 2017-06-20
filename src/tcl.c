@@ -6,7 +6,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -116,7 +116,7 @@ static void botnet_change(char *new)
     } else {
       if (botnetnick[0])
         putlog(LOG_MISC, "*", "* IDENTITY CHANGE: %s -> %s", botnetnick, new);
-      strcpy(botnetnick, new);
+      set_botnetnick(new);
     }
   }
 }
@@ -184,7 +184,7 @@ static char *tcl_eggint(ClientData cdata, Tcl_Interp *irp,
   if (flags & (TCL_TRACE_READS | TCL_TRACE_UNSETS)) {
     /* Special cases */
     if ((int *) ii->var == &conmask)
-      strcpy(s1, masktype(conmask));
+      strncpyz(s1, masktype(conmask), sizeof s1);
     else if ((int *) ii->var == &default_flags) {
       struct flag_record fr = { FR_GLOBAL, 0, 0, 0, 0, 0 };
       fr.global = default_flags;

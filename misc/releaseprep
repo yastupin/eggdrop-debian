@@ -2,7 +2,7 @@
 #
 # releaseprep - prepares the tree for release
 #
-# Copyright (C) 2004 - 2016 Eggheads Development Team
+# Copyright (C) 2004 - 2017 Eggheads Development Team
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -80,14 +80,12 @@ change_default_make() {
 	chmod +x configure
 }
 
-fix_patch_h() {
+fix_version_h() {
 	if test $do_rc -eq 1; then
-		misc/addpatch RC${rc_number} >/dev/null
-		cat src/patch.h | sed 's/^patch.*Git.*Git version \*\//patch("PRE-RELEASE");           \/* RC version *\//g' > src/patch.h_
-	else
-		cat src/patch.h | sed 's/^patch.*/\/* PATCH GOES HERE *\//g' > src/patch.h_
+		misc/setpatch RC${rc_number} >/dev/null
+	else 
+		misc/setpatch none > /dev/null
 	fi
-	mv src/patch.h_ src/patch.h
 }
 
 create_default_makefile() {
@@ -133,10 +131,13 @@ if test ! -f src/main.c; then
 fi
 
 
+#TODO: Update releaseprep with new genchanges scripts
+# do it manually for now
+#
 # Regenerate ChangeLog file before doing anything else...
-echo "Regenerating ChangeLog file..."
-regenerate_changelog $LASTVER
-echo ""
+#echo "Regenerating ChangeLog file..."
+#regenerate_changelog $LASTVER
+#echo ""
 
 # Change default make from "debug" to "eggdrop"...
 echo -n "Changing default make..."
@@ -144,16 +145,14 @@ change_default_make
 echo " done."
 
 # Fix patch.h...
-echo -n "Fixing patch.h..."
-fix_patch_h
+echo -n "Updating version.h..."
+fix_version_h
 echo " done."
 
-# Remove CVS dirs.
-# Let's remove this in 1.8.1 -Geo
-echo -n "Removing CVS and autom4te.cache directories..."
+# Remove autom4te.cache dirs...
+echo -n "Removing autom4te.cache directories..."
 find ./ -type d -name "autom4te.cache" -print | xargs rm -rf
-find ./ -type d -name "CVS" -print | xargs rm -rf
-echo " done."
+echo " done." 
 
 # Remove .gitignores.
 echo -n "Removing git files..."
@@ -173,7 +172,7 @@ if test -d ./doc/html/chat; then
 fi
 
 # Generate fresh html/docs
-misc/generateDocs
+misc/generatedocs
 
 # make distclean
 echo ""
@@ -186,7 +185,7 @@ echo -n "Creating Makefile..."
 create_default_makefile
 echo " done."
 
-echo Current patch: `misc/addpatch -s`
+echo Current patch: `misc/setpatch -s`
 echo "Complete."
 echo ""
 

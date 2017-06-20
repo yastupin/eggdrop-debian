@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1403,7 +1403,7 @@ static void new_tbuf(char *bot)
   tandbuf **old = &tbuf, *new;
 
   new = nmalloc(sizeof(tandbuf));
-  strcpy(new->bot, bot);
+  strncpyz(new->bot, bot, sizeof new->bot);
   new->q = NULL;
   new->timer = now;
   new->next = *old;

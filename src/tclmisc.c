@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -84,11 +84,11 @@ static int tcl_logfile STDVAR
     /* They just want a list of the logfiles and modes */
     for (i = 0; i < max_logs; i++)
       if (logs[i].filename != NULL) {
-        snprintf(s, sizeof s, "%s %s %s", masktype(logs[i].mask),
+        egg_snprintf(s, sizeof s, "%s %s %s", masktype(logs[i].mask),
                  logs[i].chname, logs[i].filename);
         Tcl_AppendElement(interp, s);
       }
-      return TCL_OK;
+    return TCL_OK;
   }
 
   BADARGS(4, 4, " ?logModes channel logFile?");
@@ -772,12 +772,12 @@ static int tcl_status STDVAR
 
   if ((argc < 2) || !strcmp(argv[1], "cpu")) {
     Tcl_AppendElement(irp, "cputime");
-    snprintf(s, sizeof s, "%f", getcputime());
+    egg_snprintf(s, sizeof s, "%f", getcputime());
     Tcl_AppendElement(irp, s);
   }
   if ((argc < 2) || !strcmp(argv[1], "mem")) {
     Tcl_AppendElement(irp, "expmem");
-    snprintf(s, sizeof s, "%d", expected_memory());
+    egg_snprintf(s, sizeof s, "%d", expected_memory());
     Tcl_AppendElement(irp, s);
   }
   if ((argc < 2) || !strcmp(argv[1], "ipv6")) {
@@ -798,7 +798,7 @@ static int tcl_status STDVAR
   }
   if ((argc < 2) || !strcmp(argv[1], "cache")) {
     Tcl_AppendElement(irp, "usercache");
-    snprintf(s, sizeof s, "%4.1f", 100.0 *
+    egg_snprintf(s, sizeof s, "%4.1f", 100.0 *
              ((float) cache_hit) / ((float) (cache_hit + cache_miss)));
     Tcl_AppendElement(irp, s);
   }

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Eggdrop Tcl Commands &mdash; Eggdrop 1.8.0 documentation</title>
+    <title>Eggdrop Tcl Commands &mdash; Eggdrop 1.8.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/eggdrop.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.0',
+        VERSION:     '1.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,19 +24,19 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Eggdrop 1.8.0 documentation" href="../index.html" />
+    <link rel="top" title="Eggdrop 1.8.1 documentation" href="../index.html" />
     <link rel="up" title="&lt;no title&gt;" href="index.html" />
     <link rel="next" title="IPv6 support" href="ipv6.html" />
     <link rel="prev" title="Patch How-To" href="patch.html" /> 
   </head>
-  <body>
+  <body role="document">
     <div class="header-wrapper">
       <div class="header">
           <p class="logo"><a href="../index.html">
             <img class="logo" src="../_static/eggman.png.gif" alt="Logo"/>
           </a></p>
         <div class="headertitle"><a
-          href="../index.html">Eggdrop 1.8.0 documentation</a></div>
+          href="../index.html">Eggdrop 1.8.1 documentation</a></div>
         <div class="rel">
           <a href="patch.html" title="Patch How-To"
              accesskey="P">previous</a> |
@@ -52,7 +52,7 @@
             
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <p>Eggdrop Tcl Commands
 Last revised: June 20, 2016</p>
@@ -62,7 +62,7 @@ Last revised: June 20, 2016</p>
 of the normal Tcl built-in commands are still there, of course, but you
 can also use these to manipulate features of the bot. They are listed
 according to category.</p>
-<p>This list is accurate for Eggdrop v1.8.0. Scripts written for v1.3, v1.4
+<p>This list is accurate for Eggdrop v1.8.1. Scripts written for v1.3, v1.4
 or 1.6 series of Eggdrop should probably work with a few minor modifications
 depending on the script. Scripts which were written for  v0.9, v1.0, v1.1
 or v1.2 will probably not work without modification. Commands which have
@@ -1898,7 +1898,7 @@ will be used.</p>
 <p><strong>matchcidr &lt;block&gt; &lt;address&gt; &lt;prefix&gt;</strong></p>
 <blockquote>
 <div><p>Description: performs a cidr match on the specified ip addresses. IPv6 is supported, if enabled at compile time.</p>
-<p>Example: matchcidr 192.168.0.0 192.168.1.17 16</p>
+<p>Example: matchcidr 192.1.8.1.0 192.168.1.17 16</p>
 <p>Returns: 1 if the address matches the block prefix, 0 otherwise.</p>
 <p>Module: core</p>
 </div></blockquote>
@@ -1983,7 +1983,7 @@ will be used.</p>
 <p class="last">Module: server</p>
 </dd>
 <dt><strong>version</strong></dt>
-<dd><p class="first">Value: current bot version &quot;1.1.2+pl1 1010201 pl1&quot;; first item is the text version, second item is a numerical version, and any following items are the names of patches that have been added</p>
+<dd><p class="first">Value: current bot version &quot;1.1.2+pl1 1010201&quot;; first item is the text version, to include a patch string if present, and second item is a numerical version</p>
 <p class="last">Module: core</p>
 </dd>
 <dt><strong>numversion</strong></dt>
@@ -2575,12 +2575,12 @@ fail-server       - called when an IRC server fails to respond
 </div>
 </li>
 <li><p class="first">DCC   Return 1 to make Eggdrop log the command as:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#handle# command</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#handle# command</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">FIL   Return 1 to make Eggdrop log the command as:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#handle# files: command</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#handle# files: command</span>
 </pre></div>
 </div>
 </li>
@@ -2730,7 +2730,7 @@ words) (This char only works in binds, not in regluar matching)</td>
 </tbody>
 </table>
 <blockquote>
-<div>Copyright (C) 1999 - 2016 Eggheads Development Team</div></blockquote>
+<div>Copyright (C) 1999 - 2017 Eggheads Development Team</div></blockquote>
 </div>
 </div>
 
@@ -2812,10 +2812,10 @@ words) (This char only works in binds, not in regluar matching)</td>
 
         <div class="right">
           
-    <div class="footer">
-        &copy; Copyright 2016, Eggheads.
-      Last updated on Sep 23, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Eggheads.
+      Last updated on Mar 26, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
     </div>
         </div>
         <div class="clearer"></div>

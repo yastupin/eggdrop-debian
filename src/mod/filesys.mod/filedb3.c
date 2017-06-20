@@ -6,7 +6,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -534,7 +534,9 @@ static void filedb_cleanup(FILE *fdb)
       }
     }
   }
-  ftruncate(fileno(fdb), oldpos);       /* Shorten file    */
+  if (ftruncate(fileno(fdb), oldpos) == -1) {       /* Shorten file    */
+    putlog(LOG_MISC, "*", "FILESYS: Error truncating file.");
+  }
 }
 
 /* Merges empty entries to one big entry, if they directly
@@ -578,7 +580,9 @@ static void filedb_mergeempty(FILE *fdb)
           /* ... or because we hit EOF? */
         } else {
           /* Truncate trailing empty entries and exit. */
-          ftruncate(fileno(fdb), fdbe_t->pos);
+          if (ftruncate(fileno(fdb), fdbe_t->pos) == -1) {
+            putlog(LOG_MISC, "*", "FILESYS: Error truncating file");
+          }
           free_fdbe(&fdbe_t);
           return;
         }

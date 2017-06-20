@@ -6,7 +6,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -569,7 +569,7 @@ void write_userfile(int idx)
 
   sort_userlist();
   tt = now;
-  strcpy(s1, ctime(&tt));
+  strncpyz(s1, ctime(&tt), sizeof s1);
   fprintf(f, "#4v: %s -- %s -- written %s", ver, botnetnick, s1);
   ok = 1;
   for (u = userlist; u && ok; u = u->next)

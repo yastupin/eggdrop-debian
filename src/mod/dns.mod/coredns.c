@@ -7,7 +7,7 @@
  * IPv6 support added by pseudo <pseudo@egg6.net>
  */
 /*
- * Portions Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Portions Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -665,7 +665,7 @@ static struct resolve *findip(IP ip)
 
 void ptrstring4(IP *ip, char *buf, size_t sz)
 {
-  snprintf(buf, sz, "%u.%u.%u.%u.in-addr.arpa",
+  egg_snprintf(buf, sz, "%u.%u.%u.%u.in-addr.arpa",
            ((u_8bit_t *) ip)[3],
            ((u_8bit_t *) ip)[2],
            ((u_8bit_t *) ip)[1],

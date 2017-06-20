@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -551,7 +551,7 @@ static int botaddr_write_userfile(FILE *f, struct userrec *u,
       *q++ = ';';
     else
       *q++ = *p;
-    *q = 0;
+  *q = 0;
 #ifdef TLS
   if (fprintf(f, "--%s %s:%s%u/%s%u\n", e->type->name, addr,
       (bi->ssl & TLS_BOT) ? "+" : "", bi->telnet_port, (bi->ssl & TLS_RELAY) ?
@@ -775,16 +775,21 @@ int xtra_set(struct userrec *u, struct user_entry *e, void *buf)
     egg_list_delete(&e->u.list, (struct list_type *) old);
     nfree(old->key);
     nfree(old->data);
+    if (old == e->u.extra)
+      e->u.extra = NULL;
     nfree(old);
+    old = NULL;
   }
-  if (old != new && new->data) {
-    if (new->data[0])
+  /* don't do anything when old == new */
+  if (old != new) {
+    if (new->data && new->data[0])
       list_insert((&e->u.extra), new)  /* do not add a ';' here */
-  } else {
-    if (new->data)
-      nfree(new->data);
-    nfree(new->key);
-    nfree(new);
+    else {
+      if (new->data)
+        nfree(new->data);
+      nfree(new->key);
+      nfree(new);
+    }
   }
   return TCL_OK;
 }
@@ -1063,7 +1068,7 @@ static void hosts_display(int idx, struct user_entry *e)
   strcpy(s, "  HOSTS: ");
   for (q = e->u.list; q; q = q->next) {
     if (s[0] && !s[9])
-      strcat(s, q->extra);
+      strncpyz(s, q->extra, sizeof s);
     else if (!s[0])
       sprintf(s, "         %s", q->extra);
     else {

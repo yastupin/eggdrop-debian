@@ -2,7 +2,7 @@
 #
 # getcommit - get a descriptive commit name (git)
 #
-# Copyright (C) 2015 - 2016 Eggheads Development Team
+# Copyright (C) 2015 - 2017 Eggheads Development Team
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ command -v git >/dev/null 2>&1
 HASGIT=$?
 VER=`git describe --always 2>/dev/null`
 if [ $? -ne 0 -o $HASGIT -ne 0 -o "x$VER" = "x" ]; then
-	if [ -r src/patch.h ]; then
-		VER=`cat src/patch.h | grep -E '^patch.*\);$'| awk '-F"' '{ print $2 }' 2>/dev/null`
+	if [ -r src/version.h ]; then
+		VER=$(misc/setpatch -s 2>/dev/null)
 		if [ $? -ne 0 -o "x$VER" = "x" ]; then
 			VER="unknown"
 		fi
