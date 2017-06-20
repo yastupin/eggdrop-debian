@@ -4,7 +4,7 @@
  *   by cmwagner/billyjoe/D. Senso
  */
 /*
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -248,7 +248,7 @@ static int console_chon(char *handle, int idx)
   if (dcc[idx].type == &DCC_CHAT) {
     if (i) {
       if (i->channel && i->channel[0])
-        strcpy(dcc[idx].u.chat->con_chan, i->channel);
+        strncpyz(dcc[idx].u.chat->con_chan, i->channel, sizeof dcc[idx].u.chat->con_chan);
       get_user_flagrec(dcc[idx].user, &fr, i->channel);
       dcc[idx].u.chat->con_flags = check_conflags(&fr, i->conflags);
       dcc[idx].u.chat->strip_flags = i->stripflags;

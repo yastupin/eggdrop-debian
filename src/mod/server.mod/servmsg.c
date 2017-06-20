@@ -3,7 +3,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -122,7 +122,7 @@ static int check_tcl_msgm(char *cmd, char *nick, char *uhost,
   if (arg[0])
     simple_sprintf(args, "%s %s", cmd, arg);
   else
-    strcpy(args, cmd);
+    strncpyz(args, cmd, sizeof args);
   get_user_flagrec(u, &fr, NULL);
   Tcl_SetVar(interp, "_msgm1", nick, 0);
   Tcl_SetVar(interp, "_msgm2", uhost, 0);
@@ -266,7 +266,7 @@ static int check_tcl_out(int which, char *msg, int sent)
   default:
     queue = "noqueue";
   }
-  snprintf(args, sizeof args, "%s %s", queue, sent ? "sent" : "queued");
+  egg_snprintf(args, sizeof args, "%s %s", queue, sent ? "sent" : "queued");
   Tcl_SetVar(interp, "_out1", queue, 0);
   Tcl_SetVar(interp, "_out2", msg, 0);
   Tcl_SetVar(interp, "_out3", sent ? "sent" : "queued", 0);
@@ -442,7 +442,7 @@ static int detect_flood(char *floodnick, char *floodhost, char *from, int which)
   if (p) {
     p++;
     if (egg_strcasecmp(lastmsghost[which], p)) {        /* New */
-      strcpy(lastmsghost[which], p);
+      strncpyz(lastmsghost[which], p, sizeof lastmsghost[which]);
       lastmsgtime[which] = now;
       lastmsgs[which] = 0;
       return 0;
@@ -1284,14 +1284,22 @@ static void server_resolve_success(int servidx)
   char pass[121];
 
   resolvserv = 0;
-  strcpy(pass, dcc[servidx].u.dns->cbuf);
+  strncpyz(pass, dcc[servidx].u.dns->cbuf, sizeof pass);
   changeover_dcc(servidx, &SERVER_SOCKET, 0);
   dcc[servidx].sock = getsock(dcc[servidx].sockname.family, 0);
   setsnport(dcc[servidx].sockname, dcc[servidx].port);
   serv = open_telnet_raw(dcc[servidx].sock, &dcc[servidx].sockname);
   if (serv < 0) {
+    char *errstr = NULL;
+    if (errno == EINVAL) {
+      errstr = IRC_VHOSTWRONGNET;
+    } else if (errno == EADDRNOTAVAIL) {
+      errstr = IRC_VHOSTBADADDR;
+    } else {
+      errstr = strerror(errno);
+    }
     putlog(LOG_SERV, "*", "%s %s (%s)", IRC_FAILEDCONNECT, dcc[servidx].host,
-           strerror(errno));
+           errstr);
     check_tcl_event("fail-server");
     lostdcc(servidx);
     return;

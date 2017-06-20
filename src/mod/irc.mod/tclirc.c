@@ -3,7 +3,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -976,8 +976,8 @@ static int tcl_putkick STDVAR
       continue;                 /* Skip non-existant nicks */
     m->flags |= SENTKICK;       /* Mark as pending kick */
     if (kicknick[0])
-      strcat(kicknick, ",");
-    strcat(kicknick, nick);     /* Add to local queue */
+      strncat(kicknick, ",", sizeof kicknick - strlen(kicknick) - 1);
+    strncat(kicknick, nick, sizeof kicknick - strlen(kicknick) - 1);     /* Add to local queue */
     k++;
 
     /* Check if we should send the kick command yet */

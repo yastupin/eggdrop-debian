@@ -5,7 +5,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -123,7 +123,7 @@ static void bot_chan2(int idx, char *msg)
     *p = 0;
   p = strchr(from, '@');
   if (p) {
-    snprintf(TBUF, sizeof(TBUF), "<%s> %s", from, msg);
+    egg_snprintf(TBUF, sizeof(TBUF), "<%s> %s", from, msg);
     *p = 0;
     if (!partyidle(p + 1, from)) {
       *p = '@';
@@ -310,8 +310,11 @@ static void bot_bye(int idx, char *par)
 static void remote_tell_who(int idx, char *nick, int chan)
 {
   int i = 10, k, l, ok = 0;
-  char s[1024], *realnick;
+  /* botnet_send_priv truncates at 450 */
+  char s[450] = "Channels: ", *realnick;
   struct chanset_t *c;
+  /* usable size of channelslist */
+  size_t ssize = sizeof(s) - 1;
 
   realnick = strchr(nick, ':');
   if (realnick)
@@ -319,24 +322,46 @@ static void remote_tell_who(int idx, char *nick, int chan)
   else
     realnick = nick;
   putlog(LOG_BOTS, "*", "#%s# who", realnick);
-  strcpy(s, "Channels: ");
-  for (c = chanset; c; c = c->next)
+  for (c = chanset; c; c = c->next) {
     if (!channel_secret(c) && !channel_inactive(c)) {
       l = strlen(c->dname);
-      if (i + l < 1021) {
-        if (i > 10)
-          sprintf(s, "%s, %s", s, c->dname);
-        else {
-          strcpy(s, c->dname);
-          i += (l + 2);
+      /* for 2nd and more chans we need to prepend ','; i is > 10 */
+      if (i > 10) {
+        /* check if ", #chan" fits or if there is a next chan, if ", #chan," fits */
+	if ((c->next && i + l + 3 <= ssize) || (!c->next && i + l + 2 <= ssize)) {
+          strcat(s, ", ");
+          i += 2;
+        } else {
+          /* output and prepare for more, there should always be place for ',' */
+          strcat(s, ",");
+          botnet_send_priv(idx, botnetnick, nick, NULL, "%s", s);
+          strcpy(s, "          ");
+          i = 10;
         }
       }
+
+      i += l;
+      strncat(s, c->dname, ssize);
+
+      /* check if we need to trunc, normally only for first chans on the line */
+      if (i > ssize) {
+        unsigned int trunc = 4;
+        if (c->next) {
+          /* more to come, leave place for ',' */
+          ++trunc;
+        }
+        strcpy(s + ssize - trunc, " ...");
+        s[ssize - trunc + 4] = '\0';
+        i = ssize - trunc + 4;
+      }
     }
+  }
   if (i > 10) {
-    botnet_send_priv(idx, botnetnick, nick, NULL, "%s (%s)", s, ver);
+    botnet_send_priv(idx, botnetnick, nick, NULL, "%s", s);
   } else
-    botnet_send_priv(idx, botnetnick, nick, NULL, "%s (%s)", BOT_NOCHANNELS,
-                     ver);
+    botnet_send_priv(idx, botnetnick, nick, NULL, "%s", BOT_NOCHANNELS);
+
+  botnet_send_priv(idx, botnetnick, nick, NULL, "Version: %s", ver);
   if (admin[0])
     botnet_send_priv(idx, botnetnick, nick, NULL, "Admin: %s", admin);
   if (chan == 0)
@@ -929,7 +954,7 @@ static void bot_thisbot(int idx, char *par)
   noshare = 1;
   change_handle(dcc[idx].user, par);
   noshare = 0;
-  strcpy(dcc[idx].nick, par);
+  strncpyz(dcc[idx].nick, par, sizeof dcc[idx].nick);
 }
 
 static void bot_handshake(int idx, char *par)
@@ -1023,17 +1048,19 @@ static void bot_motd(int idx, char *par)
     if (vv != NULL) {
       botnet_send_priv(idx, botnetnick, who, NULL, "--- %s\n", MISC_MOTDFILE);
       help_subst(NULL, NULL, 0, irc, NULL);
-      while (!feof(vv)) {
-        fgets(s, 120, vv);
-        if (!feof(vv)) {
-          if (s[strlen(s) - 1] == '\n')
-            s[strlen(s) - 1] = 0;
-          if (!s[0])
-            strcpy(s, " ");
-          help_subst(s, who, &fr, HELP_DCC, dcc[idx].nick);
-          if (s[0])
-            botnet_send_priv(idx, botnetnick, who, NULL, "%s", s);
-        }
+      /* don't check for feof after fgets, skips last line if it has no \n (ie on windows) */
+      while (!feof(vv) && fgets(s, sizeof TBUF, vv) != NULL) {
+        if (s[strlen(s) - 1] == '\n')
+          s[strlen(s) - 1] = 0;
+        if (!s[0])
+          strcpy(s, " ");
+        help_subst(s, who, &fr, HELP_DCC, dcc[idx].nick);
+        if (s[0])
+          botnet_send_priv(idx, botnetnick, who, NULL, "%s", s);
+      }
+      /* fgets == NULL means error or empty file, so check for error */
+      if (ferror(vv)) {
+        putlog(LOG_MISC, "*", "Error reading MOTD file");
       }
       fclose(vv);
     } else

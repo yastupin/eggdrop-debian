@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -111,7 +111,7 @@ static int msg_hello(char *nick, char *h, struct userrec *u, char *p)
       if (p1 == NULL)
         s1[0] = 0;
       else
-        strcpy(s1, p1);
+        strncpyz(s1, p1, sizeof s1);
     }
   }
   return 1;
@@ -171,7 +171,7 @@ static int msg_ident(char *nick, char *host, struct userrec *u, char *par)
   }
   pass = newsplit(&par);
   if (!par[0])
-    strcpy(who, nick);
+    strncpyz(who, nick, sizeof who);
   else {
     strncpy(who, par, NICKMAX);
     who[NICKMAX] = 0;

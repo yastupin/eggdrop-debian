@@ -1,7 +1,7 @@
 /*
  * transferqueue.c -- part of transfer.mod
  *
- * Copyright (C) 2003 - 2016 Eggheads Development Team
+ * Copyright (C) 2003 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,15 +32,18 @@ static int expmem_fileq()
 static void queue_file(char *dir, char *file, char *from, char *to)
 {
   fileq_t *q = fileq;
+  size_t l;
 
   fileq = nmalloc(sizeof *fileq);
   fileq->next = q;
-  fileq->dir = nmalloc(strlen(dir) + 1);
-  fileq->file = nmalloc(strlen(file) + 1);
-  strcpy(fileq->dir, dir);
-  strcpy(fileq->file, file);
-  strcpy(fileq->nick, from);
-  strcpy(fileq->to, to);
+  l = strlen(dir) + 1;
+  fileq->dir = nmalloc(l);
+  strncpyz(fileq->dir, dir, l);
+  l = strlen(file) + 1;
+  fileq->file = nmalloc(l);
+  strncpyz(fileq->file, file, l);
+  strncpyz(fileq->nick, from, sizeof fileq->nick);
+  strncpyz(fileq->to, to, sizeof fileq->to);
 }
 
 static void deq_this(fileq_t *this)

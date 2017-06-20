@@ -8,7 +8,7 @@
  *
  * Changes after Feb 23, 1999 Copyright Eggheads Development Team
  *
- * Copyright (C) 1999 - 2016 Eggheads Development Team
+ * Copyright (C) 1999 - 2017 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -190,7 +190,7 @@ int setsockname(sockname_t *addr, char *src, int port, int allowres)
     addr->addr.s4.sin_family = AF_INET;
   }
 #else
-  int i, count; 
+  int i, count;
 
   egg_bzero(addr, sizeof(sockname_t));
 
@@ -247,7 +247,7 @@ but this Eggdrop was not compiled with IPv6 support.");
  */
 void getvhost(sockname_t *addr, int af)
 {
-  char *h;
+  char *h = NULL;
 
   if (af == AF_INET)
     h = vhost;
@@ -255,7 +255,7 @@ void getvhost(sockname_t *addr, int af)
   else
     h = vhost6;
 #endif
-  if (setsockname(addr, h, 0, 1) != af)
+  if (setsockname(addr, (h ? h : ""), 0, 1) != af)
     setsockname(addr, (af == AF_INET ? "0" : "::"), 0, 0);
   /* Remember this 'self-lookup failed' thingie?
      I have good news - you won't see it again ;) */
@@ -468,7 +468,7 @@ static int proxy_connect(int sock, sockname_t *addr)
 #endif
   if (firewall[0] == '!') {
     proxy = PROXY_SUN;
-    strcpy(host, &firewall[1]);
+    strncpyz(host, &firewall[1], sizeof host);
   } else {
     proxy = PROXY_SOCKS;
     strcpy(host, firewall);
@@ -667,7 +667,7 @@ int getdccaddr(sockname_t *addr, char *s, size_t l)
  * If addr is not NULL, it should point to the listening socket's address.
  * Otherwise, this function will try to figure out the public address of the
  * machine, using listen_ip and natip. If restrict_af is set, it will limit
- * the possible IPs to the specified family. The result is a string useable 
+ * the possible IPs to the specified family. The result is a string useable
  * for DCC requests
  */
 int getdccfamilyaddr(sockname_t *addr, char *s, size_t l, int restrict_af)
@@ -745,13 +745,13 @@ int getdccfamilyaddr(sockname_t *addr, char *s, size_t l, int restrict_af)
     if (IN6_IS_ADDR_V4MAPPED(&r->addr.s6.sin6_addr) ||
         IN6_IS_ADDR_UNSPECIFIED(&r->addr.s6.sin6_addr)) {
       egg_memcpy(&ip, r->addr.s6.sin6_addr.s6_addr + 12, sizeof ip);
-      snprintf(s, l, "%lu", natip[0] ? iptolong(inet_addr(natip)) :
+      egg_snprintf(s, l, "%lu", natip[0] ? iptolong(inet_addr(natip)) :
                ntohl(ip));
     } else
       inet_ntop(AF_INET6, &r->addr.s6.sin6_addr, s, l);
   } else
 #endif
-  snprintf(s, l, "%lu", natip[0] ? iptolong(inet_addr(natip)) :
+  egg_snprintf(s, l, "%lu", natip[0] ? iptolong(inet_addr(natip)) :
              ntohl(r->addr.s4.sin_addr.s_addr));
   return 1;
 }
@@ -790,6 +790,19 @@ int preparefdset(fd_set *fd, sock_list *slist, int slistmax, int tclonly, int tc
     }
   }
   return foundsocks;
+}
+
+/* A safer version of write() that deals with partial writes. */
+void safe_write(int fd, const void *buf, size_t count)
+{
+  const char *bytes = buf;
+  ssize_t ret;
+  do {
+    if ((ret = write(fd, bytes, count)) == -1 && errno != EINTR) {
+      putlog(LOG_MISC, "*", "Unexpected write() failure on attempt to write %zd bytes to fd %d: %s.", count, fd, strerror(errno));
+      break;
+    }
+  } while ((bytes += ret, count -= ret));
 }
 
 /* Attempts to read from all sockets in slist (upper array boundary slistmax-1)
@@ -982,26 +995,20 @@ int sockgets(char *s, int *len)
         (socklist[i].handler.sock.inbuf != NULL)) {
       if (!(socklist[i].flags & SOCK_BINARY)) {
         /* look for \r too cos windows can't follow RFCs */
-        p = strchr(socklist[i].handler.sock.inbuf, '\n');
-        if (p == NULL)
-          p = strchr(socklist[i].handler.sock.inbuf, '\r');
+        p = strpbrk(socklist[i].handler.sock.inbuf, "\r\n");
         if (p != NULL) {
-          *p = 0;
+          while (*p == '\n' || *p == '\r')
+            *p++ = 0;
           if (strlen(socklist[i].handler.sock.inbuf) > 510)
             socklist[i].handler.sock.inbuf[510] = 0;
           strcpy(s, socklist[i].handler.sock.inbuf);
-          px = nmalloc(strlen(p + 1) + 1);
-          strcpy(px, p + 1);
-          nfree(socklist[i].handler.sock.inbuf);
-          if (px[0])
+          if (*p) {
+            px = nmalloc(strlen(p) + 1);
+            strcpy(px, p);
+            nfree(socklist[i].handler.sock.inbuf);
             socklist[i].handler.sock.inbuf = px;
-          else {
-            nfree(px);
+          } else
             socklist[i].handler.sock.inbuf = NULL;
-          }
-          /* Strip CR if this was CR/LF combo */
-          if (s[strlen(s) - 1] == '\r')
-            s[strlen(s) - 1] = 0;
           *len = strlen(s);
           return socklist[i].sock;
         }
@@ -1157,7 +1164,7 @@ void tputs(register int z, char *s, unsigned int len)
     return;
 
   if (((z == STDOUT) || (z == STDERR)) && (!backgrd || use_stderr)) {
-    write(z, s, len);
+    safe_write(z, s, len);
     return;
   }
 
