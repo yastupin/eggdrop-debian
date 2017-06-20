@@ -6,6 +6,8 @@ Build-Depends: tcl8.6-dev, libz-dev, debhelper (>= 9.20160114), autotools-dev, d
 Build-Conflicts: autoconf2.13, automake1.4
 Standards-Version: 3.9.8
 Homepage: http://www.eggheads.org/
+Vcs-Git: https://github.com/yastupin/eggdrop-debian.git
+Vcs-Browser: https://github.com/yastupin/eggdrop-debian
 
 Package: eggdrop
 Architecture: any
