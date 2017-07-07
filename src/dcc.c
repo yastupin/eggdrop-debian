@@ -65,7 +65,6 @@ int protect_telnet = 1;         /* Even bother with ident lookups :)          */
 int flood_telnet_thr = 5;       /* Number of telnet connections to be
                                  * considered a flood                         */
 int flood_telnet_time = 60;     /* In how many seconds?                       */
-char tempdir[121] = "";         /* Temporary directory (default: current dir) */
 char network[41] = "unknown-net";      /* Name of the IRC network you're on   */
 char bannerfile[121] = "text/banner";  /* File displayed on telnet login      */
 
@@ -1514,7 +1513,7 @@ static void dcc_telnet_id(int idx, char *buf, int atr)
   get_user_flagrec(dcc[idx].user, &fr, NULL);
 #ifdef TLS
   if (dcc[idx].ssl && (tls_auth == 2)) {
-    char *uid = ssl_getuid(dcc[idx].sock);
+    const char *uid = ssl_getuid(dcc[idx].sock);
 
     if (!uid || strcasecmp(uid, buf)) {
       if (glob_bot(fr))

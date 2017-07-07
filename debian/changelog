@@ -1,3 +1,9 @@
+eggdrop (1.8.2~rc1-1) UNRELEASED; urgency=medium
+
+  * New upstream version 1.8.2-rc1
+
+ -- Cédric Barboiron <ced@winkie.fr>  Fri, 07 Jul 2017 15:26:42 +0200
+
 eggdrop (1.8.1-1) UNRELEASED; urgency=medium
 
   * New upstream version 1.8.1

@@ -20,6 +20,9 @@ dnl
 dnl Load tcl macros
 builtin(include,tcl.m4)
 
+dnl Load GNU stdint.h creator
+builtin(include,ax_create_stdint_h.m4)
+
 
 dnl
 dnl Message macros.
@@ -1449,10 +1452,7 @@ AC_DEFUN([EGG_SAVE_PARAMETERS],
   done
 
   AC_SUBST(egg_ac_parameters)
-  if test "x$egg_ac_parameters" = "x"; then
-    egg_ac_parameters="none"
-  fi
-  AC_DEFINE_UNQUOTED(EGG_AC_ARGS, "$egg_ac_parameters", [Arguments passed to configure])
+  AC_DEFINE_UNQUOTED(EGG_AC_ARGS_RAW, $egg_ac_parameters, [Arguments passed to configure])
 ])
 
 
@@ -1653,6 +1653,10 @@ AC_DEFUN([EGG_TLS_DETECT],
         havessllib="no"
         break
       ]])
+      AC_CHECK_FUNC(ASN1_STRING_get0_data,
+        AC_DEFINE([egg_ASN1_string_data], [ASN1_STRING_get0_data], [Define this to ASN1_STRING_get0_data when using OpenSSL 1.1.0+, ASN1_STRING_data otherwise.])
+        , AC_DEFINE([egg_ASN1_string_data], [ASN1_STRING_data], [Define this to ASN1_STRING_get0_data when using OpenSSL 1.1.0+, ASN1_STRING_data otherwise.])
+      )
       AC_CHECK_FUNC(hex_to_string, ,
         AC_CHECK_FUNC(OPENSSL_hexstr2buf,
             AC_DEFINE([hex_to_string], [OPENSSL_hexstr2buf], [Define this to OPENSSL_hexstr2buf when using OpenSSL 1.1.0+])
