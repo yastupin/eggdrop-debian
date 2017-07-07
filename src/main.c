@@ -120,7 +120,7 @@ int term_z = 0;         /* Foreground: use the terminal as a partyline?  */
 int use_stderr = 1;     /* Send stuff to stderr instead of logfiles?     */
 
 char configfile[121] = "eggdrop.conf";  /* Default config file name */
-char pid_file[120];                     /* Name of the pid file     */
+char pid_file[121];                     /* Name of the pid file     */
 char helpdir[121] = "help/";            /* Directory of help files  */
 char textdir[121] = "text/";            /* Directory for text files */
 
@@ -130,7 +130,6 @@ int switch_logfiles_at = 300;           /* When to switch logfiles  */
 time_t online_since;    /* time that the bot was started */
 
 int make_userfile = 0; /* Using bot in userfile-creation mode? */
-char owner[121] = "";  /* Permanent owner(s) of the bot        */
 
 int save_users_at = 0;   /* Minutes past the hour to save the userfile?     */
 int notify_users_at = 0; /* Minutes past the hour to notify users of notes? */
@@ -336,7 +335,11 @@ static void write_debug()
     dprintf(-x, "Compiled without TLS support\n");
 #endif
 
-    dprintf(-x, "Configure flags: %s\n", EGG_AC_ARGS);
+    if (!strcmp(EGG_AC_ARGS, "")) {
+      dprintf(-x, "Configure flags: none\n");
+    } else {
+      dprintf(-x, "Configure flags: %s\n", EGG_AC_ARGS);
+    }
 #ifdef CCFLAGS
     dprintf(-x, "Compile flags: %s\n", CCFLAGS);
 #endif
@@ -496,56 +499,107 @@ void eggAssert(const char *file, int line, const char *module)
 }
 #endif
 
-static void do_arg(char *s)
-{
+void show_ver() {
   char x[512], *z = x;
-  int i;
 
-  if (s[0] == '-')
-    for (i = 1; i < strlen(s); i++) {
-      switch (s[i]) {
+  strncpyz(x, egg_version, sizeof x);
+  newsplit(&z);
+  newsplit(&z);
+  printf("%s\n", version);
+  if (z[0]) {
+    printf("  (patches: %s)\n", z);
+  }
+  if (!strcmp(EGG_AC_ARGS, "")) {
+    printf("Configure flags: none\n");
+  } else {
+    printf("Configure flags: %s\n", EGG_AC_ARGS);
+  }
+  printf("Compiled with: ");
+#ifdef IPV6
+  printf("IPv6, ");
+#endif
+#ifdef TLS
+  printf("TLS, ");
+#endif
+  printf("handlen=%d\n", HANDLEN);
+  bg_send_quit(BG_ABORT);
+}
+
+/* Hard coded text because config file isn't loaded yet,
+   meaning other languages can't be loaded yet.
+   English (or an error) is the only possible option.
+*/
+void show_help() {
+  printf("\n%s\n\n", version);
+  printf("Usage: eggdrop [options] [config-file]\n\n"
+         "Options:\n"
+         "-n Don't background; send all log entries to console.\n"
+         "-nc  Don't background; display channel stats every 10 seconds.\n"
+         "-nt  Don't background; use terminal to simulate DCC chat.\n"
+         "-m   Create userfile.\n"
+         "-h   Show this help.\n"
+         "-v   Show version info, then quit.\n\n");
+  bg_send_quit(BG_ABORT);
+}
+
+static void do_arg()
+{
+  int option = 0;
+/* Bitmask structure to hold cli flags
+   | QUIT| BAD FLAG| h| n| c| t| m| v|
+   |  128|       64|32|16| 8| 4| 2| 1|
+*/
+  unsigned char cliflags = 0;
+
+  while ((option = getopt(argc, argv, "hnctmv")) != -1) {
+    switch (option) {
       case 'n':
+        cliflags |= 16;
         backgrd = 0;
         break;
       case 'c':
+        cliflags |= 8;
         con_chan = 1;
         term_z = 0;
         break;
       case 't':
+        cliflags |= 4;
         con_chan = 0;
         term_z = 1;
         break;
       case 'm':
+        cliflags |= 2;
         make_userfile = 1;
         break;
       case 'v':
-        strncpyz(x, egg_version, sizeof x);
-        newsplit(&z);
-        newsplit(&z);
-        printf("%s\n", version);
-        if (z[0])
-          printf("  (patches: %s)\n", z);
-        printf("Configure flags: " EGG_AC_ARGS "\n");
-        printf("Compiled with: ");
-#ifdef IPV6
-        printf("IPv6, ");
-#endif
-#ifdef TLS
-        printf("TLS, ");
-#endif
-        printf("handlen=%d\n", HANDLEN);
-        bg_send_quit(BG_ABORT);
-        exit(0);
-        break;                  /* this should never be reached */
+        cliflags |= 129;		//128 + 1
+        break;
       case 'h':
-        printf("\n%s\n\n", version);
-        printf("%s\n", EGG_USAGE);
-        bg_send_quit(BG_ABORT);
-        exit(0);
-        break;                  /* this should never be reached */
-      }
-    } else
-    strncpyz(configfile, s, sizeof configfile);
+        cliflags |= 160;		//128 + 32
+        break;
+      default:
+        cliflags |= 192;		//128 + 64
+        break;
+    }
+  }
+  if ((cliflags & 64) || (cliflags & 32)) {
+    show_help();
+    exit(0);
+  } else if (cliflags & 1) {
+    show_ver();
+    exit(0);
+  } else if (!(cliflags & 16) && ((cliflags & 8) || (cliflags & 4))) {
+    printf("\n%s\n", version);
+    printf("ERROR: The -n flag is required when using the -c or -t flags. Exiting...\n\n");
+    exit(1);
+  } else if (argc > (optind + 1)) {
+    printf("\n");
+    printf("WARNING: More than one config file value detected\n");
+    printf("         Using %s as config file\n", argv[optind]);
+  }
+  if (argc > optind) {
+    strncpyz(configfile, argv[optind], sizeof configfile);
+  }
 }
 
 void backup_userfile(void)
@@ -1052,10 +1106,9 @@ int main(int arg_c, char **arg_v)
   lastmin = now / 60;
   srandom((unsigned int) (now % (getpid() + getppid())));
   init_mem();
-  init_language(1);
   if (argc > 1)
-    for (i = 1; i < argc; i++)
-      do_arg(argv[i]);
+    do_arg();
+  init_language(1);
 
   printf("\n%s\n", version);
 
@@ -1171,30 +1224,26 @@ int main(int arg_c, char **arg_v)
 
   /* Terminal emulating dcc chat */
   if (!backgrd && term_z) {
-    int n = new_dcc(&DCC_CHAT, sizeof(struct chat_info));
+    /* reuse term_z as glob var to pass it's index in the dcc table around */
+    term_z = new_dcc(&DCC_CHAT, sizeof(struct chat_info));
 
-    if (!n)
+    /* new_dcc returns -1 on error, and 0 should always be taken by the listening socket */
+    if (term_z < 1)
       fatal("ERROR: Failed to initialize foreground chat.", 0);
 
-    getvhost(&dcc[n].sockname, AF_INET);
-    dcc[n].sock = STDOUT;
-    dcc[n].timeval = now;
-    dcc[n].u.chat->con_flags = conmask;
-    dcc[n].u.chat->strip_flags = STRIP_ALL;
-    dcc[n].status = STAT_ECHO;
-    strcpy(dcc[n].nick, "HQ");
-    strcpy(dcc[n].host, "llama@console");
-    /* HACK: Workaround not to pass literal "HQ" as a non-const arg */
-    dcc[n].user = get_user_by_handle(userlist, dcc[n].nick);
-    /* Make sure there's an innocuous HQ user if needed */
-    if (!dcc[n].user) {
-      userlist = adduser(userlist, dcc[n].nick, "none", "-", USER_PARTY);
-      dcc[n].user = get_user_by_handle(userlist, dcc[n].nick);
-    }
+    getvhost(&dcc[term_z].sockname, AF_INET);
+    dcc[term_z].sock = STDOUT;
+    dcc[term_z].timeval = now;
+    dcc[term_z].u.chat->con_flags = conmask;
+    dcc[term_z].u.chat->strip_flags = STRIP_ALL;
+    dcc[term_z].status = STAT_ECHO;
+    strcpy(dcc[term_z].nick, EGG_BG_HANDLE);
+    strcpy(dcc[term_z].host, "llama@console");
+    add_hq_user();
     setsock(STDOUT, 0);          /* Entry in net table */
-    dprintf(n, "\n### ENTERING DCC CHAT SIMULATION ###\n");
-    dprintf(n, "You can use the .su command to log into your Eggdrop account.\n\n");
-    dcc_chatter(n);
+    dprintf(term_z, "\n### ENTERING DCC CHAT SIMULATION ###\n");
+    dprintf(term_z, "You can use the .su command to log into your Eggdrop account.\n\n");
+    dcc_chatter(term_z);
   }
 
   then = now;

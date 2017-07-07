@@ -122,7 +122,7 @@ Telnet to the bot and enter 'NEW' as your nickname.
 0x537,OR go to IRC and type:  /msg %s hello\n
 0x538,This will make the bot recognize you as the master.
 0x539,USERFILE ALREADY EXISTS (drop the '-m')
-0x53a,CAN'T WRITE TO TEMP DIR
+# 0x53a - unused
 0x53b,Can't reload user file!
 0x53c,User file is missing!
 0x53e,%B  (%E)\n\nPlease enter your nickname.\n
@@ -249,16 +249,7 @@ Telnet to the bot and enter 'NEW' as your nickname.
 0x673,nick flood
 
 # EGG_
-0x700,Usage: eggdrop [options] [config-file]\n\n\
-Options:\n\
-  -h   help\n\
-  -n   Don't background; send all log entries to console.\n\
-  -nc  Don't background; display channel stats every 10 seconds.\n\
-  -nt  Don't background; use terminal to simulate DCC chat.\n\
-  -m   Create userfile.\n\
-  -h   Show this help.\n\
-  -v   Show version info, then quit.\n\n
-
+#0x700 - unused
 0x701,I detect %s already running from this directory.\n
 0x702,If this is incorrect, erase the '%s'\n
 0x703,* Warning! Could not write %s file!\n

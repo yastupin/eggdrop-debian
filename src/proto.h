@@ -103,6 +103,7 @@ int isowner(char *);
 char *masktype(int);
 char *maskname(int);
 void reaffirm_owners();
+void add_hq_user();
 void rehash();
 void reload();
 void chanprog();
@@ -306,7 +307,7 @@ int readtclprog(char *fname);
 #ifdef TLS
 int ssl_handshake(int, int, int, int, char *, IntFunc);
 char *ssl_fpconv(char *in, char *out);
-char *ssl_getuid(int sock);
+const char *ssl_getuid(int sock);
 char *ssl_getfp(int sock);
 #endif
 

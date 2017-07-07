@@ -61,7 +61,7 @@ static time_t lastpingcheck;    /* set when i unidle myself, cleared when
 static time_t server_online;    /* server connection time */
 static time_t server_cycle_wait;        /* seconds to wait before
                                          * re-beginning the server list */
-static char botrealname[121];   /* realname of bot */
+static char botrealname[81];    /* realname of bot */
 static int server_timeout;      /* server timeout for connecting */
 static struct server_list *serverlist;  /* old-style queue, still used by
                                          * server list */
@@ -97,6 +97,10 @@ static int msgrate;             /* Number of seconds between sending
 #ifdef TLS
 static int use_ssl;		/* Use SSL for the next server connection? */
 static int tls_vfyserver;       /* Certificate validation mode for servrs  */
+#endif
+
+#ifndef TLS
+static char sslserver = 0;
 #endif
 
 static p_tcl_bind_list H_wall, H_raw, H_notc, H_msgm, H_msg, H_flud, H_ctcr,
@@ -959,15 +963,16 @@ static void add_server(const char *ss)
   for (z = serverlist; z && z->next; z = z->next);
 
   /* Allow IPv6 and IPv4-mapped addresses in [] */
-  if (!sscanf(ss, "[%255[0-9.A-F:a-f]]:%10[+0-9]:%120s", name, port, pass) &&
-      !sscanf(ss, "%255[^:]:%10[+0-9]:%120s", name, port, pass))
+  if (!sscanf(ss, "[%255[0-9.A-F:a-f]]:%10[+0-9]:%120[^\r\n]", name, port, pass) &&
+      !sscanf(ss, "%255[^:]:%10[+0-9]:%120[^\r\n]", name, port, pass))
     return;
 
 #ifndef TLS
   if (port[0] == '+') {
     putlog(LOG_MISC, "*", "ERROR: Attempted to add SSL-enabled server, but \
 Eggdrop was not compiled with SSL libraries. Skipping...");
-  return;
+    sslserver = 1;
+    return;
   }
 #endif
 
@@ -1208,7 +1213,7 @@ static char *get_altbotnick(void)
 {
   /* A random-number nick? */
   if (strchr(altnick, '?')) {
-    if (!raltnick[0]) {
+    if (!raltnick[0] && !wild_match(altnick, botname)) {
       strncpyz(raltnick, altnick, NICKLEN);
       rand_nick(raltnick);
     }
@@ -1681,8 +1686,15 @@ static void server_postrehash()
   strncpyz(botname, origbotname, NICKLEN);
   if (!botname[0])
     fatal("NO BOT NAME.", 0);
-  if (serverlist == NULL)
-    fatal("NO SERVER.", 0);
+  if ((serverlist == NULL)
+#ifndef TLS
+  && (sslserver)) {
+    fatal("NO NON-SSL SERVERS ADDED (TLS IS DISABLED).", 0);
+  } else if (serverlist == NULL
+#endif
+  ) {
+    fatal("NO SERVERS ADDED.", 0);
+  }
   if (oldnick[0] && !rfc_casecmp(oldnick, botname) &&
       !rfc_casecmp(oldnick, get_altbotnick())) {
     /* Change botname back, don't be premature. */
