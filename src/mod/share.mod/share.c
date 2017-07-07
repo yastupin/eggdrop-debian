@@ -48,7 +48,7 @@ static Function *global = NULL, *transfer_funcs = NULL, *channels_funcs = NULL;
 
 static int private_global = 0;
 static int private_user = 0;
-static char private_globals[50];
+static char private_globals[51];
 static int allow_resync = 0;
 static struct flag_record fr = { 0, 0, 0, 0, 0, 0 };
 static int resync_time = 900;
@@ -1904,7 +1904,7 @@ static void start_sending_users(int idx)
 #ifdef IPV6
   char s[INET6_ADDRSTRLEN];
 #else
-  char s[sizeof "255.255.255.255"];
+  char s[INET_ADDRSTRLEN];
 #endif
 
   egg_snprintf(share_file, sizeof share_file, ".share.%s.%lu", dcc[idx].nick,
@@ -1926,7 +1926,7 @@ static void start_sending_users(int idx)
     return;
   }
 
-  if ((i = raw_dcc_send(share_file, "*users", "(users)", share_file)) > 0) {
+  if ((i = raw_dcc_send(share_file, "*users", "(users)")) > 0) {
     unlink(share_file);
     dprintf(idx, "s e %s\n", USERF_CANTSEND);
     putlog(LOG_BOTS, "*", "%s -- can't send userfile",
