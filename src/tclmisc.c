@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -438,7 +438,12 @@ static int tcl_strftime STDVAR
 
 static int tcl_myip STDVAR
 {
-  char s[16];
+#ifdef IPV6
+  char s[INET6_ADDRSTRLEN];
+#else
+  char s[INET_ADDRSTRLEN];
+#endif
+
 
   BADARGS(1, 1, "");
 

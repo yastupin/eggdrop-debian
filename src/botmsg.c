@@ -7,7 +7,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,21 +44,22 @@ void tandout_but EGG_VARARGS_DEF(int, arg1)
 {
   int i, x, len;
   char *format;
-  char s[601];
+  char s[511];
   va_list va;
 
   x = EGG_VARARGS_START(int, arg1, va);
   format = va_arg(va, char *);
 
-  egg_vsnprintf(s, 511, format, va);
+  len = egg_vsnprintf(s, sizeof s, format, va);
   va_end(va);
-  s[sizeof(s) - 1] = 0;
-
-  len = strlen(s);
+  if (len >= sizeof s) {
+    len = sizeof s - 1;
+    s[len] = 0;
+  }
 
   for (i = 0; i < dcc_total; i++)
     if ((dcc[i].type == &DCC_BOT) && (i != x) && (b_numver(i) < NEAT_BOTNET))
-      tputs(dcc[i].sock, s, len);
+      dprint(i, s, len);
 }
 #endif
 
@@ -198,6 +199,7 @@ void send_tand_but(int x, char *buf, int len)
   int i, iso = 0;
 
   if (len < 0) {
+    /* Very unlikely len would be INT_MIN */
     len = -len;
     iso = 1;
   }
@@ -205,7 +207,7 @@ void send_tand_but(int x, char *buf, int len)
     if ((dcc[i].type == &DCC_BOT) && (i != x) &&
         (b_numver(i) >= NEAT_BOTNET) &&
         (!iso || !(bot_flags(dcc[i].user) & BOT_ISOLATE)))
-      tputs(dcc[i].sock, buf, len);
+      dprint(i, buf, len);
 }
 
 void botnet_send_bye()
@@ -271,20 +273,20 @@ void botnet_send_ping(int idx)
 {
 #ifndef NO_OLD_BOTNET
   if (b_numver(idx) < NEAT_BOTNET)
-    tputs(dcc[idx].sock, "ping\n", 5);
+    dprintf(idx, "ping\n");
   else
 #endif
-    tputs(dcc[idx].sock, "pi\n", 3);
+    dprintf(idx, "pi\n");
 }
 
 void botnet_send_pong(int idx)
 {
 #ifndef NO_OLD_BOTNET
   if (b_numver(idx) < NEAT_BOTNET)
-    tputs(dcc[idx].sock, "pong\n", 5);
+    dprintf(idx, "pong\n");
   else
 #endif
-    tputs(dcc[idx].sock, "po\n", 3);
+    dprintf(idx, "po\n");
 }
 
 void botnet_send_priv EGG_VARARGS_DEF(int, arg1)
@@ -319,7 +321,7 @@ void botnet_send_priv EGG_VARARGS_DEF(int, arg1)
 #endif
       l = simple_sprintf(OBUF, "p %s %s %s\n", from, to, tbuf);
   }
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_who(int idx, char *from, char *to, int chan)
@@ -332,7 +334,7 @@ void botnet_send_who(int idx, char *from, char *to, int chan)
   else
 #endif
     l = simple_sprintf(OBUF, "w %s %s %D\n", from, to, chan);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_infoq(int idx, char *par)
@@ -355,20 +357,19 @@ void botnet_send_unlink(int idx, char *who, char *via, char *bot, char *reason)
   else
 #endif
     l = simple_sprintf(OBUF, "ul %s %s %s %s\n", who, via, bot, reason);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_link(int idx, char *who, char *via, char *bot)
 {
   int l;
-
 #ifndef NO_OLD_BOTNET
   if (b_numver(idx) < NEAT_BOTNET)
     l = simple_sprintf(OBUF, "link %s %s %s\n", who, via, bot);
   else
 #endif
     l = simple_sprintf(OBUF, "l %s %s %s\n", who, via, bot);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_unlinked(int idx, char *bot, char *args)
@@ -413,7 +414,7 @@ void botnet_send_traced(int idx, char *bot, char *buf)
   else
 #endif
     l = simple_sprintf(OBUF, "td %s %s\n", bot, buf);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_trace(int idx, char *to, char *from, char *buf)
@@ -426,7 +427,7 @@ void botnet_send_trace(int idx, char *to, char *from, char *buf)
   else
 #endif
     l = simple_sprintf(OBUF, "t %s %s %s:%s\n", to, from, buf, botnetnick);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_update(int idx, tand_t *ptr)
@@ -465,7 +466,7 @@ void botnet_send_reject(int idx, char *fromp, char *frombot, char *top,
     else
 #endif
       l = simple_sprintf(OBUF, "r %s %s %s\n", fromp, top, reason);
-    tputs(dcc[idx].sock, OBUF, l);
+    dprint(idx, OBUF, l);
   }
 }
 
@@ -479,7 +480,7 @@ void botnet_send_zapf(int idx, char *a, char *b, char *c)
   else
 #endif
     l = simple_sprintf(OBUF, "z %s %s %s\n", a, b, c);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_zapf_broad(int idx, char *a, char *b, char *c)
@@ -505,7 +506,7 @@ void botnet_send_motd(int idx, char *from, char *to)
   else
 #endif
     l = simple_sprintf(OBUF, "m %s %s\n", from, to);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_filereject(int idx, char *path, char *from, char *reason)
@@ -518,7 +519,7 @@ void botnet_send_filereject(int idx, char *path, char *from, char *reason)
   else
 #endif
     l = simple_sprintf(OBUF, "f! %s %s %s\n", path, from, reason);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_filesend(int idx, char *path, char *from, char *data)
@@ -531,7 +532,7 @@ void botnet_send_filesend(int idx, char *path, char *from, char *data)
   else
 #endif
     l = simple_sprintf(OBUF, "fs %s %s %s\n", path, from, data);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_filereq(int idx, char *from, char *bot, char *path)
@@ -544,7 +545,7 @@ void botnet_send_filereq(int idx, char *from, char *bot, char *path)
   else
 #endif
     l = simple_sprintf(OBUF, "fr %s %s:%s\n", from, bot, path);
-  tputs(dcc[idx].sock, OBUF, l);
+  dprint(idx, OBUF, l);
 }
 
 void botnet_send_idle(int idx, char *bot, int sock, int idle, char *away)

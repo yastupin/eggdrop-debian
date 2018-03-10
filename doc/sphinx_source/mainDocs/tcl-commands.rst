@@ -1,5 +1,5 @@
 Eggdrop Tcl Commands
-Last revised: June 20, 2016
+Last revised: December 14, 2017
 
 ====================
 Eggdrop Tcl Commands
@@ -11,7 +11,7 @@ of the normal Tcl built-in commands are still there, of course, but you
 can also use these to manipulate features of the bot. They are listed
 according to category.
 
-This list is accurate for Eggdrop v1.8.1. Scripts written for v1.3, v1.4
+This list is accurate for Eggdrop v1.8.3. Scripts written for v1.3, v1.4
 or 1.6 series of Eggdrop should probably work with a few minor modifications
 depending on the script. Scripts which were written for  v0.9, v1.0, v1.1
 or v1.2 will probably not work without modification. Commands which have
@@ -21,7 +21,9 @@ marked with vertical bars (|) on the left.
 Output Commands
 ---------------
 
-**putserv <text> [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^
+putserv <text> [options]
+^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends text to the server, like '.dump' (intended for direct server commands); output is queued so that the bot won't flood itself off the server.
 
@@ -33,7 +35,9 @@ Output Commands
 
   Module: server
 
-**puthelp <text> [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^
+puthelp <text> [options]
+^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends text to the server, like 'putserv', but it uses a different queue intended for sending messages to channels or people.
 
@@ -45,7 +49,9 @@ Output Commands
 
   Module: server
 
-**putquick <text> [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^^
+putquick <text> [options]
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends text to the server, like 'putserv', but it uses a different (and faster) queue.
 
@@ -57,7 +63,9 @@ Output Commands
 
   Module: server
 
-**putnow <text> [-oneline]**
+^^^^^^^^^^^^^^^^^^^^^^^^
+putnow <text> [-oneline]
+^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends text to the server immediately, bypassing all queues. Use with caution, as the bot may easily flood itself off the server.
 
@@ -68,7 +76,9 @@ Output Commands
 
   Module: server
 
-**putkick <channel> <nick,nick,...> [reason]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+putkick <channel> <nick,nick,...> [reason]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends kicks to the server and tries to put as many nicks into one kick command as possible.
 
@@ -76,7 +86,9 @@ Output Commands
 
   Module: irc
 
-**putlog <text>**
+^^^^^^^^^^^^^
+putlog <text>
+^^^^^^^^^^^^^
 
   Description: sends text to the bot's logfile, marked as 'misc' (o)
 
@@ -84,7 +96,9 @@ Output Commands
 
   Module: core
 
-**putcmdlog <text>**
+^^^^^^^^^^^^^^^^
+putcmdlog <text>
+^^^^^^^^^^^^^^^^
 
   Description: sends text to the bot's logfile, marked as 'command' (c)
 
@@ -92,21 +106,27 @@ Output Commands
 
   Module: core
 
-**putxferlog <text>**
+^^^^^^^^^^^^^^^^^
+putxferlog <text>
+^^^^^^^^^^^^^^^^^
   Description: sends text to the bot's logfile, marked as 'file-area' (x)
 
   Returns: nothing
 
   Module: core
 
-**putloglev <level(s)> <channel> <text>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+putloglev <level(s)> <channel> <text>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   Description: sends text to the bot's logfile, tagged with all of the valid levels given. Use "*" to indicate all log levels.
 
   Returns: nothing
 
   Module: core
 
-**dumpfile <nick> <filename>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+dumpfile <nick> <filename>
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: dumps file from the help/text directory to a user on IRC via msg (one line per msg). The user has no flags, so the flag bindings won't work within the file.
 
@@ -114,13 +134,17 @@ Output Commands
 
   Module: core
 
-**queuesize [queue]**
+^^^^^^^^^^^^^^^^^
+queuesize [queue]
+^^^^^^^^^^^^^^^^^
 
   Returns: the number of messages in all queues. If a queue is specified, only the size of this queue is returned. Valid queues are: mode, server, help.
 
   Module: server
 
-**clearqueue <queue>**
+^^^^^^^^^^^^^^^^^^
+clearqueue <queue>
+^^^^^^^^^^^^^^^^^^
 
   Description: removes all messages from a queue. Valid arguments are: mode, server, help, or all.
 
@@ -131,19 +155,25 @@ Output Commands
 User Record Manipulation Commands
 ---------------------------------
 
-**countusers**
+^^^^^^^^^^
+countusers
+^^^^^^^^^^
 
   Returns: number of users in the bot's database
 
   Module: core
 
-**validuser <handle>**
+^^^^^^^^^^^^^^^^^^
+validuser <handle>
+^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if a user by that name exists; 0 otherwise
 
   Module: core
 
-**finduser <nick!user@host>**
+^^^^^^^^^^^^^^^^^^^^^^^^^
+finduser <nick!user@host>
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: finds the user record which most closely matches the given nick!user\@host
 
@@ -151,13 +181,17 @@ User Record Manipulation Commands
 
   Module: core
 
-**userlist [flags]**
+^^^^^^^^^^^^^^^^
+userlist [flags]
+^^^^^^^^^^^^^^^^
 
   Returns: a list of users on the bot. You can use the flag matching system here ([global]{&/\|}[chan]{&/\|}[bot]). '&' specifies "and"; '|' specifies "or".
 
   Module: core
 
-**passwdok <handle> <pass>**
+^^^^^^^^^^^^^^^^^^^^^^^^
+passwdok <handle> <pass>
+^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: checks the password given against the user's password. Check against the password "" (a blank string) or "-" to find out if a user has no password set.
 
@@ -165,14 +199,16 @@ User Record Manipulation Commands
 
   Module: core
 
-**getuser <handle> <entry-type> [extra info]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+getuser <handle> [entry-type] [extra info]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Description: an interface to the new generic userfile support. Valid entry types are:
+  Description: an interface to the new generic userfile support. Without an entry-type, it returns a flat key/value list (dict) of all set entries. Valid entry types are:
 
   +----------+-------------------------------------------------------------------------------------+
   | BOTFL    | returns the current bot-specific flags for the user (bot-only)                      |
   +----------+-------------------------------------------------------------------------------------+
-  | BOTADDR  | returns a list containing the bot's address, telnet port, and relay port (bot-only) |
+  | BOTADDR  | returns a list containing the bot's address, bot listen port, and user listen port  |
   +----------+-------------------------------------------------------------------------------------+
   | HOSTS    | returns a list of hosts for the user                                                |
   +----------+-------------------------------------------------------------------------------------+
@@ -191,38 +227,52 @@ User Record Manipulation Commands
   | PASS     | returns the user's encrypted password                                               |
   +----------+-------------------------------------------------------------------------------------+
 
-  For additional custom user fields, to include the deprecated "EMAIL" and "URL" fields, reference scripts/userinfo.tcl
+  For additional custom user fields, to include the deprecated "EMAIL" and "URL" fields, reference scripts/userinfo.tcl.
 
   Returns: info specific to each entry-type
 
   Module: core
 
-**setuser <handle> <entry-type> [extra info]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+setuser <handle> <entry-type> [extra info]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: this is the counterpart of getuser. It lets you set the various values. Other then the ones listed below, the entry-types are the same as getuser's.
 
   +---------+---------------------------------------------------------------------------------------+
-  | PASS    | sets a users password (no third arg will clear it)                                    |
+  | Type    | Extra Info                                                                            |
+  +=========+=======================================================================================+
+  | PASS    | <password>                                                                            |
+  |         |   Password string (Empty value will clear the password)                               |
   +---------+---------------------------------------------------------------------------------------+
-  | HOSTS   | if used with no third arg, all hosts for the user will be cleared. Otherwise, *1*     |
-  |         | hostmask is added :P                                                                  |
+  | BOTADDR | <address> [bot listen port] [user listen port]                                        |
+  |         |   Sets address, bot listen port and user listen port. If no listen ports are          |
+  |         |   specified, only the bot address is updated. If only the bot listen port is          |
+  |         |   specified, both the bot and user listen ports are set to the bot listen port.       |
+  +---------+---------------------------------------------------------------------------------------+
+  | HOSTS   | [hostmask]                                                                            |
+  |         |   If no value is specified, all hosts for the user will be cleared. Otherwise, only   |
+  |         |   *1* hostmask is added :P                                                            |
   +---------+---------------------------------------------------------------------------------------+
   | LASTON  | This setting has 3 forms.                                                             |
   |         |                                                                                       |
-  |         |   *setuser <handle> LASTON <unixtime> <place>* sets global LASTON time                |
+  |         | <unixtime> <place>                                                                    |
+  |         |    sets global LASTON time                                                            |
   |         |                                                                                       |
-  |         |   *setuser <handle> LASTON <unixtime>* sets global LASTON time (leaving the place     |
-  |         |   field empty)                                                                        |
+  |         | <unixtime>                                                                            |
+  |         |   sets global LASTON time (leaving the place field empty)                             |
   |         |                                                                                       |
-  |         |   *setuser <handle> LASTON <unixtime> <channel>* sets a users LASTON time for a       |
-  |         |   channel (if it is a  valid channel)                                                 |
+  |         | <unixtime> <channel>                                                                  |
+  |         |   sets a user's LASTON time for a channel (if it is a valid channel)                  |
   +---------+---------------------------------------------------------------------------------------+
 
   Returns: nothing
 
   Module: core
 
-**chhandle <old-handle> <new-handle>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+chhandle <old-handle> <new-handle>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: changes a user's handle
 
@@ -230,7 +280,9 @@ User Record Manipulation Commands
 
   Module: core
 
-**chattr <handle> [changes [channel]]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+chattr <handle> [changes [channel]]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: changes the attributes for a user record, if you include any.
   Changes are of the form '+f', '-o', '+dk', '-o+d', etc. If changes are specified in the format of \|<changes> <channel>, the channel-specific flags for that channel are altered. You can now use the +o|-o #channel format here too.
@@ -239,7 +291,9 @@ User Record Manipulation Commands
 
   Module: core
 
-**botattr <handle> [changes [channel]]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+botattr <handle> [changes [channel]]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: similar to chattr except this modifies bot flags rather than normal user attributes.
 
@@ -247,13 +301,51 @@ User Record Manipulation Commands
 
   Module: core
 
-**matchattr <handle> <flags> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+matchattr <handle> <flags> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Returns: 1 if the specified user has the specified flags; 0 otherwise
+  Description: checks if the flags of the specified user match the flags provided. Default matching pattern uses the | (OR) convention. For example, specifying +mn for flags will check if the user has the m OR n flag.
+
++------------+-----------------------------------------------------------------+
+| Flag Mask  | Action                                                          |
++============+=================================================================+
+| +m         + Checks if the user has the m global flag                        |
++------------+-----------------------------------------------------------------+
+| +mn        | Checks if the user has the m or n global flag                   |
++------------+-----------------------------------------------------------------+
+| +mn&       | Checks if the user has the m and n global flag                  |
++------------+-----------------------------------------------------------------+
+| \|+o #foo  | Checks if the user has the o channel flag for #foo              |
++------------+-----------------------------------------------------------------+
+| &mn #foo   | Checks if the user has the m and n channel flag for #foo        |
++------------+-----------------------------------------------------------------+
+| +o|+n #foo | Checks if the user has the o global flag, or the n channel      |
+|            | flag for #foo                                                   |
++------------+-----------------------------------------------------------------+
+| +m&+v      | Checks if the user has the m global flag, and the v channel     |
+|            | flag for #foo                                                   |
++------------+-----------------------------------------------------------------+
+| -m         | Checks if the user does not have the m global flag              |
++------------+-----------------------------------------------------------------+
+| \|-n #foo  | Checks if the user does not have the n channel flag for #foo    |
++------------+-----------------------------------------------------------------+
+| +m|-n #foo | Checks if the user has the global m flag or does not have a     |
+|            | channel n flag for #foo                                         |
++------------+-----------------------------------------------------------------+
+| -n&-m #foo | Searches if the user does not have the global n flag and does   |
+|            | not have the channel m flag for #foo                            |
++------------+-----------------------------------------------------------------+
+| ||+b       | Searches if the user has the bot flag b                         |
++------------+-----------------------------------------------------------------+
+
+  Returns: 1 if the specified user has the flags matching the provided mask; 0 otherwise
 
   Module: core
 
-**adduser <handle> [hostmask]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+adduser <handle> [hostmask]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: creates a new user entry with the handle and hostmask given (with no password and the default flags)
 
@@ -261,14 +353,25 @@ User Record Manipulation Commands
 
   Module: core
 
-**addbot <handle> <address>**
-  Description: adds a new bot to the userlist with the handle and botaddress given (with no password and no flags)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addbot <handle> <address> [botport [userport]]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  Description: adds a new bot to the userlist with the handle and botaddress given (with no password and no flags). <address> format is one of:
 
-  Returns: 1 if successful; 0 if the bot already exists
+  - ipaddress
+  - ipv4address:botport/userport    [DEPRECATED]
+  - [ipv6address]:botport/userport  [DEPRECATED]
+
+NOTE 1: The []s around the ipv6address argument are literal []s, not optional arguments.
+NOTE 2: In the deprecated formats, an additional botport and/or userport given as follow-on arguments are ignored.
+
+  Returns: 1 if successful; 0 if the bot already exists or a port is invalid
 
   Module: core
 
-**deluser <handle>**
+^^^^^^^^^^^^^^^^
+deluser <handle>
+^^^^^^^^^^^^^^^^
 
   Description: attempts to erase the user record for a handle
 
@@ -276,7 +379,9 @@ User Record Manipulation Commands
 
   Module: core
 
-**delhost <handle> <hostmask>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+delhost <handle> <hostmask>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: deletes a hostmask from a user's host list
 
@@ -284,7 +389,9 @@ User Record Manipulation Commands
 
   Module: core
 
-**addchanrec <handle> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addchanrec <handle> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: adds a channel record for a user
 
@@ -292,7 +399,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**delchanrec <handle> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+delchanrec <handle> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes a channel record for a user. This includes all associated channel flags.
 
@@ -300,19 +409,25 @@ User Record Manipulation Commands
 
   Module: channels
 
-**haschanrec <handle> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+haschanrec <handle> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the given handle has a chanrec for the specified channel; 0 otherwise
 
   Module: channels
 
-**getchaninfo <handle> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+getchaninfo <handle> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: info line for a specific channel (behaves just like 'getinfo')
 
   Module: channels
 
-**setchaninfo <handle> <channel> <info>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+setchaninfo <handle> <channel> <info>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sets the info line on a specific channel for a user. If info is "none", it will be removed.
 
@@ -320,7 +435,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**newchanban <channel> <ban> <creator> <comment> [lifetime] [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+newchanban <channel> <ban> <creator> <comment> [lifetime] [options]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: adds a ban to the ban list of a channel; creator is given credit for the ban in the ban list. lifetime is specified in minutes. If lifetime is not specified, ban-time (usually 60) is used. Setting the lifetime to 0 makes it a permanent ban.
 
@@ -335,9 +452,11 @@ User Record Manipulation Commands
 
   Module: channels
 
-**newban <ban> <creator> <comment> [lifetime] [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+newban <ban> <creator> <comment> [lifetime] [options]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Description: adds a ban to the global ban list (which takes effect on all channels); creator is given credit for the ban in the ban list. lifetime is specified in minutes. If lifetime is not specified, global-ban-time (usually 60) is used. Setting the lifetime to 0 makes it a permanent ban.
+  Description: adds a ban to the global ban list (which takes effect on all channels); creator is given credit for the ban in the ban list. lifetime is specified in minutes. If lifetime is not specified, default-ban-time (usually 120) is used. Setting the lifetime to 0 makes it a permanent ban.
 
   Options:
 
@@ -349,7 +468,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**newchanexempt <channel> <exempt> <creator> <comment> [lifetime] [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+newchanexempt <channel> <exempt> <creator> <comment> [lifetime] [options]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: adds a exempt to the exempt list of a channel; creator is given credit for the exempt in the exempt list. lifetime is specified in minutes. If lifetime is not specified, exempt-time (usually 60) is used. Setting the lifetime to 0 makes it a permanent exempt. The exempt will not be removed until the corresponding ban has been removed. For timed bans, once the time period has expired, the exempt will not be removed until the corresponding ban has either expired or been removed.
 
@@ -363,7 +484,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**newexempt <exempt> <creator> <comment> [lifetime] [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+newexempt <exempt> <creator> <comment> [lifetime] [options]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: adds a exempt to the global exempt list (which takes effect on all channels); creator is given credit for the exempt in the exempt list. lifetime is specified in minutes. If lifetime is not specified, exempt-time (usually 60) is used. Setting the lifetime to 0 makes it a permanent exempt. The exempt will not be removed until the corresponding ban has been removed.
 
@@ -377,7 +500,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**newchaninvite <channel> <invite> <creator> <comment> [lifetime] [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+newchaninvite <channel> <invite> <creator> <comment> [lifetime] [options]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: adds a invite to the invite list of a channel; creator is given credit for the invite in the invite list. lifetime is specified in minutes. If lifetime is not specified, invite-time (usually 60) is used. Setting the lifetime to 0 makes it a permanent invite. The invite will not be removed until the channel has gone -i.
 
@@ -391,7 +516,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**newinvite <invite> <creator> <comment> [lifetime] [options]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+newinvite <invite> <creator> <comment> [lifetime] [options]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: adds a invite to the global invite list (which takes effect on all channels); creator is given credit for the invite in the invite list. lifetime is specified in minutes. If lifetime is not specified, invite-time (usually 60) is used. Setting the lifetime to 0 makes it a permanent invite. The invite will not be removed until the channel has gone -i.
 
@@ -405,7 +532,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**stickban <banmask> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stickban <banmask> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: makes a ban sticky, or, if a channel is specified, then it is set sticky on that channel only.
 
@@ -413,7 +542,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**unstickban <banmask> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+unstickban <banmask> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: makes a ban no longer sticky, or, if a channel is specified, then it is unstuck on that channel only.
 
@@ -421,7 +552,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**stickexempt <exemptmask> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stickexempt <exemptmask> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: makes an exempt sticky, or, if a channel is specified, then it is set sticky on that channel only.
 
@@ -429,7 +562,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**unstickexempt <exemptmask> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+unstickexempt <exemptmask> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: makes an exempt no longer sticky, or, if a channel is specified, then it is unstuck on that channel only.
 
@@ -437,14 +572,18 @@ User Record Manipulation Commands
 
   Module: channels
 
-**stickinvite <invitemask> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stickinvite <invitemask> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   Description: makes an invite sticky, or, if a channel is specified, then it is set sticky on that channel only.
 
   Returns: 1 on success; 0 otherwise
 
   Module: channels
 
-**unstickinvite <invitemask> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+unstickinvite <invitemask> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: makes an invite no longer sticky, or, if a channel is specified, then it is unstuck on that channel only.
 
@@ -452,7 +591,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**killchanban <channel> <ban>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+killchanban <channel> <ban>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes a ban from the ban list for a channel
 
@@ -460,7 +601,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**killban <ban>**
+^^^^^^^^^^^^^
+killban <ban>
+^^^^^^^^^^^^^
 
   Description: removes a ban from the global ban list
 
@@ -468,7 +611,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**killchanexempt <channel> <exempt>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+killchanexempt <channel> <exempt>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes an exempt from the exempt list for a channel
 
@@ -476,7 +621,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**killexempt <exempt>**
+^^^^^^^^^^^^^^^^^^^
+killexempt <exempt>
+^^^^^^^^^^^^^^^^^^^
 
   Description: removes an exempt from the global exempt list
 
@@ -484,7 +631,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**killchaninvite <channel> <invite>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+killchaninvite <channel> <invite>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes an invite from the invite list for a channel
 
@@ -492,7 +641,9 @@ User Record Manipulation Commands
 
   Module: channels
 
-**killinvite <invite>**
+^^^^^^^^^^^^^^^^^^^
+killinvite <invite>
+^^^^^^^^^^^^^^^^^^^
 
   Description: removes an invite from the global invite list
 
@@ -500,104 +651,138 @@ User Record Manipulation Commands
 
   Module: channels
 
-**ischanjuped <channel>**
+^^^^^^^^^^^^^^^^^^^^^
+ischanjuped <channel>
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the channel is juped, and the bot is unable to join; 0 otherwise
 
   Module: channels
 
-**isban <ban> [channel]**
+^^^^^^^^^^^^^^^^^^^^^
+isban <ban> [channel]
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified ban is in the global ban list; 0 otherwise. If a channel is specified, that channel's ban list is checked as well.
 
   Module: channels
 
-**ispermban <ban> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^
+ispermban <ban> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified ban is in the global ban list AND is marked as permanent; 0 otherwise. If a channel is specified, that channel's ban list is checked as well.
 
   Module: channels
 
-**isexempt <exempt> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+isexempt <exempt> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified exempt is in the global exempt list; 0 otherwise. If a channel is specified, that channel's exempt list is checked as well.
 
   Module: channels
 
-**ispermexempt <exempt> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ispermexempt <exempt> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified exempt is in the global exempt list AND is marked as permanent; 0 otherwise. If a channel is specified, that channel's exempt list is checked as well.
 
   Module: channels
 
-**isinvite <invite> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+isinvite <invite> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified invite is in the global invite list; 0 otherwise. If a channel is specified, that channel's invite list is checked as well.
 
   Module: channels
 
-**isperminvite <invite> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+isperminvite <invite> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified invite is in the global invite list AND is marked as permanent; 0 otherwise. If a channel is specified, that channel's invite list is checked as well.
 
   Module: channels
 
-**isbansticky <ban> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+isbansticky <ban> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified ban is marked as sticky in the global ban list; 0 otherwise. If a channel is specified, that channel's ban list is checked as well.
 
   Module: channels
 
-**isexemptsticky <exempt> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+isexemptsticky <exempt> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified exempt is marked as sticky in the global exempt list; 0 otherwise. If a channel is specified, that channel's exempt list is checked as well.
 
   Module: channels
 
-**isinvitesticky <invite> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+isinvitesticky <invite> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified invite is marked as sticky in the global invite list; 0 otherwise. If a channel is specified, that channel's invite list is checked as well.
 
   Module: channels
 
-**matchban <nick!user@host> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+matchban <nick!user@host> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified nick!user\@host matches a ban in the global ban list; 0 otherwise. If a channel is specified, that channel's ban list is checked as well.
 
   Module: channels
 
-**matchexempt <nick!user@host> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+matchexempt <nick!user@host> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified nick!user\@host matches an exempt in the global exempt list; 0 otherwise. If a channel is specified, that channel's exempt list is checked as well.
 
   Module: channels
 
-**matchinvite <nick!user@host> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+matchinvite <nick!user@host> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified nick!user\@host matches an invite in the global invite list; 0 otherwise. If a channel is specified, that
   channel's invite list is checked as well.
 
   Module: channels
 
-**banlist [channel]**
+^^^^^^^^^^^^^^^^^
+banlist [channel]
+^^^^^^^^^^^^^^^^^
 
   Returns: a list of global bans, or, if a channel is specified, a list of channel-specific bans. Each entry is a sublist containing: hostmask, comment, expiration timestamp, time added, last time active, and creator. The three timestamps are in unixtime format.
 
   Module: channels
 
-**exemptlist [channel]**
+^^^^^^^^^^^^^^^^^^^^
+exemptlist [channel]
+^^^^^^^^^^^^^^^^^^^^
 
   Returns: a list of global exempts, or, if a channel is specified, a list of channel-specific exempts. Each entry is a sublist containing: hostmask, comment, expiration timestamp, time added, last time active, and creator. The three timestamps are in unixtime format.
 
   Module: channels
 
-**invitelist [channel]**
+^^^^^^^^^^^^^^^^^^^^
+invitelist [channel]
+^^^^^^^^^^^^^^^^^^^^
 
   Returns: a list of global invites, or, if a channel is specified, a list of channel-specific invites. Each entry is a sublist containing: hostmask, comment, expiration timestamp, time added, last time active, and creator. The three timestamps are in unixtime format.
 
   Module: channels
 
-**newignore <hostmask> <creator> <comment> [lifetime]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+newignore <hostmask> <creator> <comment> [lifetime]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: adds an entry to the ignore list; creator is given credit for the ignore. lifetime is how many minutes until the ignore expires and is removed. If lifetime is not specified, ignore-time (usually 60) is used. Setting the lifetime to 0 makes it a permanent ignore.
 
@@ -605,26 +790,34 @@ User Record Manipulation Commands
 
   Module: core
 
-**killignore <hostmask>**
+^^^^^^^^^^^^^^^^^^^^^
+killignore <hostmask>
+^^^^^^^^^^^^^^^^^^^^^
   Description: removes an entry from the ignore list
 
   Returns: 1 if successful; 0 otherwise
 
   Module: core
 
-**ignorelist**
+^^^^^^^^^^
+ignorelist
+^^^^^^^^^^
 
   Returns: a list of ignores. Each entry is a sublist containing: hostmask, comment, expiration timestamp, time added, and creator. The timestamps are in unixtime format.
 
   Module: core
 
-**isignore <hostmask>**
+^^^^^^^^^^^^^^^^^^^
+isignore <hostmask>
+^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the ignore is in the list; 0 otherwise
 
   Module: core
 
-**save**
+^^^^
+save
+^^^^
 
   Description: writes the user and channel files to disk
 
@@ -632,7 +825,9 @@ User Record Manipulation Commands
 
   Module: core
 
-**reload**
+^^^^^^
+reload
+^^^^^^
 
   Description: loads the userfile from disk, replacing whatever is in memory
 
@@ -640,14 +835,18 @@ User Record Manipulation Commands
 
   Module: core
 
-**backup**
+^^^^^^
+backup
+^^^^^^
   Description: makes a simple backup of the userfile that's on disk. If the channels module is loaded, this also makes a simple backup of the channel file.
 
   Returns: nothing
 
   Module: core
 
-**getting-users**
+^^^^^^^^^^^^^
+getting-users
+^^^^^^^^^^^^^
 
   Returns: 1 if the bot is currently downloading a userfile from a sharebot (and hence, user records are about to drastically change); 0 if not
 
@@ -656,7 +855,9 @@ User Record Manipulation Commands
 Channel Commands
 ----------------
 
-**channel add <name> [option-list]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+channel add <name> [option-list]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: adds a channel record for the bot to monitor. The full list of possible options are given in doc/settings/mod.channels. Note that the channel options must be in a list (enclosed in {}).
 
@@ -664,7 +865,9 @@ Channel Commands
 
   Module: channels
 
-**channel set <name> <options...>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+channel set <name> <options...>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sets options for the channel specified. The full list of possible options are given in doc/settings/mod.channels.
 
@@ -672,19 +875,25 @@ Channel Commands
 
   Module: channels
 
-**channel info <name>**
+^^^^^^^^^^^^^^^^^^^
+channel info <name>
+^^^^^^^^^^^^^^^^^^^
 
   Returns: a list of info about the specified channel's settings.
 
   Module: channels
 
-**channel get <name> [setting]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+channel get <name> [setting]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: The value of the setting you specify. For flags, a value of 0 means it is disabled (-), and non-zero means enabled (+). If no setting is specified, a flat list of all available settings and their values will be returned.
 
   Module: channels
 
-**channel remove <name>**
+^^^^^^^^^^^^^^^^^^^^^
+channel remove <name>
+^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes a channel record from the bot and makes the bot no longer monitor the channel
 
@@ -692,7 +901,9 @@ Channel Commands
 
   Module: channels
 
-**savechannels**
+^^^^^^^^^^^^
+savechannels
+^^^^^^^^^^^^
 
   Description: saves the channel settings to the channel-file if one is defined.
 
@@ -700,20 +911,29 @@ Channel Commands
 
   Module: channels
 
-**loadchannels**
+^^^^^^^^^^^^
+loadchannels
+^^^^^^^^^^^^
   Description: reloads the channel settings from the channel-file if one is defined.
 
   Returns: nothing
 
   Module: channels
 
-**channels**
+^^^^^^^^
+channels
+^^^^^^^^
 
   Returns: a list of the channels the bot has a channel record for
 
   Module: channels
 
-**channame2dname <channel-name>** and **chandname2name <channel-dname>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+channame2dname <channel-name>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+chandname2name <channel-dname>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: these two functions are important to correctly support !channels. The bot differentiates between channel description names (chan dnames) and real channel names (chan names). The chan dnames are what you would normally call the channel, such as "!channel". The chan names are what the IRC server uses to identify the channel. They consist of the chan dname prefixed with an ID; such as "!ABCDEchannel".
 
@@ -725,126 +945,168 @@ Channel Commands
 
   Module: irc
 
-**isbotnick <nick>**
+^^^^^^^^^^^^^^^^
+isbotnick <nick>
+^^^^^^^^^^^^^^^^
 
   Returns: 1 if the nick matches the botnick; 0 otherwise
 
   Module: server
 
-**botisop [channel]**
+^^^^^^^^^^^^^^^^^
+botisop [channel]
+^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the bot has ops on the specified channel (or any channel if no channel is specified); 0 otherwise
 
   Module: irc
 
-**botishalfop [channel]**
+^^^^^^^^^^^^^^^^^^^^^
+botishalfop [channel]
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the bot has halfops on the specified channel (or any channel if no channel is specified); 0 otherwise
 
   Module: irc
 
-**botisvoice [channel]**
+^^^^^^^^^^^^^^^^^^^^
+botisvoice [channel]
+^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the bot has a voice on the specified channel (or any channel if no channel is specified); 0 otherwise
 
   Module: irc
 
-**botonchan [channel]**
+^^^^^^^^^^^^^^^^^^^
+botonchan [channel]
+^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the bot is on the specified channel (or any channel if no channel is specified); 0 otherwise
 
   Module: irc
 
-**isop <nickname> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^
+isop <nickname> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if someone by the specified nickname is on the channel (or any channel if no channel name is specified) and has ops; 0 otherwise
 
   Module: irc
 
-**ishalfop <nickname> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ishalfop <nickname> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if someone by the specified nickname is on the channel (or any channel if no channel name is specified) and has halfops; 0 otherwise
 
   Module: irc
 
-**wasop <nickname> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+wasop <nickname> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if someone that just got opped/deopped in the chan had op before the modechange; 0 otherwise
 
   Module: irc
 
-**washalfop <nickname> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+washalfop <nickname> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if someone that just got halfopped/dehalfopped in the chan had halfop before the modechange; 0 otherwise
 
   Module: irc
 
-**isvoice <nickname> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+isvoice <nickname> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if someone by that nickname is on the channel (or any channel if no channel is specified) and has voice (+v); 0 otherwise
 
   Module: irc
 
-**onchan <nickname> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+onchan <nickname> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
   Returns: 1 if someone by that nickname is on the specified channel (or any channel if none is specified); 0 otherwise
 
   Module: irc
 
-**nick2hand <nickname> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+nick2hand <nickname> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: the handle of a nickname on a channel. If a channel is not specified, the bot will check all of its channels. If the nick is not found, "" is returned. If the nick is found but does not have a handle, "*" is returned.
 
   Module: irc
 
-**hand2nick <handle> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hand2nick <handle> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: nickname of the first person on the specified channel (if one is specified) whose nick!user\@host matches the given handle; "" is returned if no match is found. If no channel is specified, all channels are checked.
 
   Module: irc
 
-**handonchan <handle> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+handonchan <handle> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the the nick!user\@host for someone on the channel (or any channel if no channel name is specified) matches for the handle given; 0 otherwise
 
   Module: irc
 
-**ischanban <ban> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^
+ischanban <ban> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified ban is on the given channel's ban list (not the bot's banlist for the channel)
 
   Module: irc
 
-**ischanexempt <exempt> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ischanexempt <exempt> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified exempt is on the given channel's exempt list (not the bot's exemptlist for the channel)
 
   Module: irc
 
-**ischaninvite <invite> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ischaninvite <invite> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the specified invite is on the given channel's invite list (not the bot's invitelist for the channel)
 
   Module: irc
 
-**chanbans <channel>**
+^^^^^^^^^^^^^^^^^^
+chanbans <channel>
+^^^^^^^^^^^^^^^^^^
 
   Returns: a list of the current bans on the channel. Each element is a sublist of the form {<ban> <bywho> <age>}. age is seconds from the bot's point of view
 
   Module: irc
 
-**chanexempts <channel>**
+^^^^^^^^^^^^^^^^^^^^^
+chanexempts <channel>
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: a list of the current exempts on the channel. Each element is a sublist of the form {<exempts> <bywho> <age>}. age is seconds from the bot's point of view
 
   Module: irc
 
-**chaninvites <channel>**
+^^^^^^^^^^^^^^^^^^^^^
+chaninvites <channel>
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: a list of the current invites on the channel. Each element is a sublist of the form {<invites> <bywho> <age>}. age is seconds from the bot's point of view
 
   Module: irc
 
-**resetbans <channel>**
+^^^^^^^^^^^^^^^^^^^
+resetbans <channel>
+^^^^^^^^^^^^^^^^^^^
 
   Description: removes all bans on the channel that aren't in the bot's ban list and refreshes any bans that should be on the channel but aren't
 
@@ -852,7 +1114,9 @@ Channel Commands
 
   Module: irc
 
-**resetexempts <channel>**
+^^^^^^^^^^^^^^^^^^^^^^
+resetexempts <channel>
+^^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes all exempt on the channel that aren't in the bot's exempt list and refreshes any exempts that should be on the channel but aren't
 
@@ -860,7 +1124,9 @@ Channel Commands
 
   Module: irc
 
-**resetinvites <channel>**
+^^^^^^^^^^^^^^^^^^^^^^
+resetinvites <channel>
+^^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes all invites on the channel that aren't in the bot's invite list and refreshes any invites that should be on the channel but aren't
 
@@ -868,7 +1134,9 @@ Channel Commands
 
   Module: irc
 
-**resetchanidle [nick] <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+resetchanidle [nick] <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: resets the channel idle time for the given nick or for all nicks on the channel if no nick is specified.
 
@@ -876,14 +1144,18 @@ Channel Commands
 
   Module: irc
 
-**resetchanjoin [nick] <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+resetchanjoin [nick] <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   Description: resets the channel join time for the given nick or for all nicks on the channel if no nick is specified.
 
   Returns: nothing
 
   Module: irc
 
-**resetchan <channel> [flags]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+resetchan <channel> [flags]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: rereads in the channel info from the server. If flags are specified, only the required information will be reset, according to the given flags. Available flags:
 
@@ -905,55 +1177,61 @@ Channel Commands
 
   Module: irc
 
-**getchanhost <nickname> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+getchanhost <nickname> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: user\@host of the specified nickname (the nickname is not included in the returned host). If a channel is not specified, bot will check all of its channels. If the nickname is not on the channel(s), "" is returned.
 
   Module: irc
 
-**getchanjoin <nickname> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+getchanjoin <nickname> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: timestamp (unixtime format) of when the specified nickname joined the channel if available, 0 otherwise. Note that after a channel reset this information will be lost, even if previously available.
 
   Module: irc
 
-**onchansplit <nick> [channel]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+onchansplit <nick> [channel]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if that nick is split from the channel (or any channel if no channel is specified); 0 otherwise
 
   Module: irc
 
-**chanlist <channel> [flags[&chanflags]]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+chanlist <channel> [flags][<&|>chanflags]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Description: flags are any global flags; the '&' denotes to look for channel specific flags. Examples:
+  Description: flags are any global flags; the '&' or '|' denotes to look for channel specific flags, where '&' will return users having ALL chanflags and '|' returns users having ANY of the chanflags (See matchattr above for additional examples).
 
-  +--------+--------------------------------+
-  | n      | (Global Owner)                 |
-  +--------+--------------------------------+
-  | &n     |  (Channel Owner)               |
-  +--------+--------------------------------+
-  | o&m    |  (Global Op, Channel Master)   |
-  +--------+--------------------------------+
+  Returns: Searching for flags optionally preceded with a '+' will return a list of nicknames that have all the flags listed. Searching for flags preceded with a '-' will return a list of nicknames that do not have have any of the flags (differently said, '-' will hide users that have all flags listed). If no flags are given, all of the nicknames on the channel are returned.
 
-  Now you can use even more complex matching of flags, including +&- flags and & or | ('and' or 'or') matching.
-
-  Returns: list of nicknames currently on the bot's channel that have all of the flags specified;. If no flags are given, all of the nicknames are returned. Please note that if you're executing chanlist after a part or sign bind, the gone user will still be listed, so you can check for wasop, isop, etc.
+  Please note that if you're executing chanlist after a part or sign bind, the gone user will still be listed, so you can check for wasop, isop, etc.
 
   Module: irc
 
-**getchanidle <nickname> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+getchanidle <nickname> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: number of minutes that person has been idle; -1 if the specified user isn't on the channel
 
   Module: irc
 
-**getchanmode <channel>**
+^^^^^^^^^^^^^^^^^^^^^
+getchanmode <channel>
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: string of the type "+ntik key" for the channel specified
 
   Module: irc
 
-**jump [server [[+]port [password]]]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+jump [server [[+]port [password]]]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: jumps to the server specified, or (if none is specified) the next server in the bot's serverlist. If you prefix the port with a plus sign (e.g. +6697), SSL connection will be attempted.
 
@@ -961,7 +1239,9 @@ Channel Commands
 
   Module: server
 
-**pushmode <channel> <mode> [arg]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pushmode <channel> <mode> [arg]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends out a channel mode change (ex: pushmode #lame +o goober) through the bot's queuing system. All the mode changes will be sent out at once (combined into one line as much as possible) after the script finishes, or when 'flushmode' is called.
 
@@ -969,7 +1249,9 @@ Channel Commands
 
   Module: irc
 
-**flushmode <channel>**
+^^^^^^^^^^^^^^^^^^^
+flushmode <channel>
+^^^^^^^^^^^^^^^^^^^
 
   Description: forces all previously pushed channel mode changes to be sent to the server, instead of when the script is finished (just for the channel specified)
 
@@ -977,13 +1259,17 @@ Channel Commands
 
   Module: irc
 
-**topic <channel>**
+^^^^^^^^^^^^^^^
+topic <channel>
+^^^^^^^^^^^^^^^
 
   Returns: string containing the current topic of the specified channel
 
   Module: irc
 
-**validchan <channel>**
+^^^^^^^^^^^^^^^^^^^
+validchan <channel>
+^^^^^^^^^^^^^^^^^^^
 
   Description: checks if the bot has a channel record for the specified channel. Note that this does not necessarily mean that the bot is ON the channel.
 
@@ -991,13 +1277,17 @@ Channel Commands
 
   Module: channels
 
-**isdynamic <channel>**
+^^^^^^^^^^^^^^^^^^^
+isdynamic <channel>
+^^^^^^^^^^^^^^^^^^^
 
   Returns: 1 if the channel is a dynamic channel; 0 otherwise
 
   Module: channels
 
-**setudef <flag/int/str> <name>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+setudef <flag/int/str> <name>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: initializes a user defined channel flag, string or integer setting. You can use it like any other flag/setting. IMPORTANT: Don't forget to reinitialize your flags/settings after a restart, or it'll be lost.
 
@@ -1005,7 +1295,9 @@ Channel Commands
 
   Module: channels
 
-**renudef <flag/int/str> <oldname> <newname>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+renudef <flag/int/str> <oldname> <newname>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: renames a user defined channel flag, string, or integer setting.
 
@@ -1013,7 +1305,9 @@ Channel Commands
 
   Module: channels
 
-**deludef <flag/int/str> <name>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+deludef <flag/int/str> <name>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: deletes a user defined channel flag, string, or integer setting.
 
@@ -1021,13 +1315,17 @@ Channel Commands
 
   Module: channels
 
-**getudefs [flag/int/str]**
+^^^^^^^^^^^^^^^^^^^^^^^
+getudefs [flag/int/str]
+^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: a list of user defined channel settings of the given type, or all of them if no type is given.
 
   Module: channels
 
-**chansettype <setting>**
+^^^^^^^^^^^^^^^^^^^^^
+chansettype <setting>
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: The type of the setting you specify. The possible types are flag, int, str, pair. A flag type references a channel flag setting that can be set to either + or -. An int type is a channel  setting that is set to a number, such as ban-time. A str type is a  channel setting that stores a string, such as need-op. A pair type is a setting that holds a value couple, such as the flood settings.
 
@@ -1036,7 +1334,9 @@ Channel Commands
 DCC Commands
 ------------
 
-**putdcc <idx> <text> [-raw]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+putdcc <idx> <text> [-raw]
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends text to the idx specified. If -raw is specified, the text will be sent as is, without forced new lines or limits to line length.
 
@@ -1044,15 +1344,19 @@ DCC Commands
 
   Module: core
 
-**dccbroadcast <message>**
+^^^^^^^^^^^^^^^^^^^^^^
+dccbroadcast <message>
+^^^^^^^^^^^^^^^^^^^^^^
 
-  Description: sends a message to everyone on the party line across the botnet, in the form of "\*\*\* <message>" for local users and "\*\*\* (Bot) <message>" for users on other bots
+  Description: sends a message to everyone on the party line across the botnet, in the form of "\*\*\* <message>" for local users, "\*\*\* (Bot) <message>" for users on other bots with version below 1.8.3, and "(Bot) <message>" for users on other bots with version 1.8.3+ and console log mode 'l' enabled
 
   Returns: nothing
 
   Module: core
 
-**dccputchan <channel> <message>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+dccputchan <channel> <message>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends your message to everyone on a certain channel on the botnet, in a form exactly like dccbroadcast does. Valid channels are 0 through 99999.
 
@@ -1060,14 +1364,18 @@ DCC Commands
 
   Module: core
 
-**boot <user@bot> [reason]**
+^^^^^^^^^^^^^^^^^^^^^^^^
+boot <user@bot> [reason]
+^^^^^^^^^^^^^^^^^^^^^^^^
   Description: boots a user from the partyline
 
   Returns: nothing
 
   Module: core
 
-**dccsimul <idx> <text>**
+^^^^^^^^^^^^^^^^^^^^^
+dccsimul <idx> <text>
+^^^^^^^^^^^^^^^^^^^^^
 
   Description: simulates text typed in by the dcc user specified. Note that in v0.9, this only simulated commands; now a command must be preceded by a '.' to be simulated.
 
@@ -1075,31 +1383,41 @@ DCC Commands
 
   Module: core
 
-**hand2idx <handle>**
+^^^^^^^^^^^^^^^^^
+hand2idx <handle>
+^^^^^^^^^^^^^^^^^
 
   Returns: the idx (a number greater than or equal to zero) for the user given if the user is on the party line in chat mode (even if she is currently on a channel or in chat off), the file area, or in the control of a script. -1 is returned if no idx is found. If the user is on multiple times, the oldest idx is returned.
 
   Module: core
 
-**idx2hand <idx>**
+^^^^^^^^^^^^^^
+idx2hand <idx>
+^^^^^^^^^^^^^^
 
   Returns: handle of the user with the given idx
 
   Module: core
 
-**valididx <idx>**
+^^^^^^^^^^^^^^
+valididx <idx>
+^^^^^^^^^^^^^^
 
   Returns: 1 if the idx currently exists; 0 otherwise
 
   Module: core
 
-**getchan <idx>**
+^^^^^^^^^^^^^
+getchan <idx>
+^^^^^^^^^^^^^
 
   Returns: the current party line channel for a user on the party line; "0" indicates he's on the group party line, "-1" means he has chat off, and a value from 1 to 99999 is a private channel
 
   Module: core
 
-**setchan <idx> <channel>**
+^^^^^^^^^^^^^^^^^^^^^^^
+setchan <idx> <channel>
+^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sets a party line user's channel. The party line user is not notified that she is now on a new channel. A channel name can be used (provided it exists).
 
@@ -1107,7 +1425,9 @@ DCC Commands
 
   Module: core
 
-**console <idx> [channel] [console-modes]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+console <idx> [channel] [console-modes]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: changes a dcc user's console mode, either to an absolute mode (like "mpj") or just adding/removing flags (like "+pj" or "-moc" or "+mp-c"). The user's console channel view can be changed also (as long as the new channel is a valid channel).
 
@@ -1115,7 +1435,19 @@ DCC Commands
 
   Module: core
 
-**echo <idx> [status]**
+^^^^^^^^^^^^^^^^^^
+resetconsole <idx>
+^^^^^^^^^^^^^^^^^^
+
+  Description: changes a dcc user's console mode to the default setting in the configfile.
+
+  Returns: a list containing the user's channel view and (new) console modes, or nothing if that user isn't currently on the partyline
+
+  Module: core
+
+^^^^^^^^^^^^^^^^^^^
+echo <idx> [status]
+^^^^^^^^^^^^^^^^^^^
 
   Description: turns a user's echo on or off; the status has to be a 1 or 0
 
@@ -1123,7 +1455,9 @@ DCC Commands
 
   Module: core
 
-**strip <idx> [+/-strip-flags]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+strip <idx> [+/-strip-flags]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: modifies the strip-flags for a user. The supported strip-flags are:
 
@@ -1151,7 +1485,9 @@ DCC Commands
 
   Module: core
 
-**putbot <bot-nick> <message>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+putbot <bot-nick> <message>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sends a message across the botnet to another bot. If no script intercepts the message on the other end, the message is ignored.
 
@@ -1159,7 +1495,9 @@ DCC Commands
 
   Module: core
 
-**putallbots <message>**
+^^^^^^^^^^^^^^^^^^^^
+putallbots <message>
+^^^^^^^^^^^^^^^^^^^^
 
   Description: sends a message across the botnet to all bots. If no script intercepts the message on the other end, the message is ignored.
 
@@ -1167,7 +1505,9 @@ DCC Commands
 
   Module: core
 
-**killdcc <idx>**
+^^^^^^^^^^^^^
+killdcc <idx>
+^^^^^^^^^^^^^
 
   Description: kills a partyline or file area connection
 
@@ -1175,13 +1515,17 @@ DCC Commands
 
   Module: core
 
-**bots**
+^^^^
+bots
+^^^^
 
   Returns: list of the bots currently connected to the botnet
 
   Module: core
 
-**botlist**
+^^^^^^^
+botlist
+^^^^^^^
 
   Returns: a list of bots currently on the botnet. Each item in the list is a sublist with four elements: bot, uplink, version, and sharing status:
 
@@ -1197,19 +1541,25 @@ DCC Commands
 
   Module: core
 
-**islinked <bot>**
+^^^^^^^^^^^^^^
+islinked <bot>
+^^^^^^^^^^^^^^
 
   Returns: 1 if the bot is currently linked; 0 otherwise
 
   Module: core
 
-**dccused**
+^^^^^^^
+dccused
+^^^^^^^
 
   Returns: number of dcc connections currently in use
 
   Module: core
 
-**dcclist [type]**
+^^^^^^^^^^^^^^
+dcclist [type]
+^^^^^^^^^^^^^^
 
   Returns: a list of active connections, each item in the list is a sublist containing six elements:
   {<idx> <handle> <hostname> <type> {<other>} <timestamp>}.
@@ -1218,25 +1568,33 @@ DCC Commands
 
   Module: core
 
-**whom <chan>**
+^^^^^^^^^^^
+whom <chan>
+^^^^^^^^^^^
 
   Returns: list of people on the botnet who are on that channel. 0 is the default party line. Each item in the list is a sublist with six elements: nickname, bot, hostname, access flag ('-', '@', '+', or '*'), minutes idle, and away message (blank if the user is not away). If you specify * for channel, every user on the botnet is returned with an extra argument indicating the channel the user is on.
 
   Module: core
 
-**getdccidle <idx>**
+^^^^^^^^^^^^^^^^
+getdccidle <idx>
+^^^^^^^^^^^^^^^^
 
   Returns: number of seconds the dcc chat/file system/script user has been idle
 
   Module: core
 
-**getdccaway <idx>**
+^^^^^^^^^^^^^^^^
+getdccaway <idx>
+^^^^^^^^^^^^^^^^
 
   Returns: away message for a dcc chat user (or "" if the user is not set away)
 
   Module: core
 
-**setdccaway <idx> <message>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+setdccaway <idx> <message>
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sets a party line user's away message and marks them away. If set to "", the user is marked as no longer away.
 
@@ -1244,7 +1602,9 @@ DCC Commands
 
   Module: core
 
-**connect <host> <[+]port>**
+^^^^^^^^^^^^^^^^^^^^^^^^
+connect <host> <[+]port>
+^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: makes an outgoing connection attempt and creates a dcc entry for it. A 'control' command should be used immediately after a successful 'connect' so no input is lost. If the port is prefixed with a plus sign, SSL encrypted connection will be attempted.
 
@@ -1252,7 +1612,9 @@ DCC Commands
 
   Module: core
 
-**listen <port> <type> [options] [flag]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+listen <port> <type> [options] [flag]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: opens a listening port to accept incoming telnets; type must be one of "bots", "all", "users", "script", or "off". Prefixing the port with a plus sign will make eggdrop accept SSL connections on it.
 
@@ -1288,7 +1650,9 @@ DCC Commands
 
   Module: core
 
-**dccdumpfile <idx> <filename>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+dccdumpfile <idx> <filename>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: dumps out a file from the text directory to a dcc chat user. The flag matching that's used everywhere else works here, too.
 
@@ -1299,7 +1663,9 @@ DCC Commands
 Notes Module
 ------------
 
-**notes <user> [numberlist]**
+^^^^^^^^^^^^^^^^^^^^^^^^^
+notes <user> [numberlist]
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: -1 if no such user, -2 if notefile failure. If a numberlist is not specified, the number of notes stored for the user is returned. Otherwise, a list of sublists containing information about notes stored for the user is returned. Each sublist is in the format of::
 
@@ -1307,7 +1673,9 @@ Notes Module
 
   Module: notes
 
-**erasenotes <user> <numberlist>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+erasenotes <user> <numberlist>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: erases some or all stored notes for a user. Use '-' to erase all notes.
 
@@ -1315,7 +1683,9 @@ Notes Module
 
   Module: notes
 
-**listnotes <user> <numberlist>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+listnotes <user> <numberlist>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: lists existing notes according to the numberlist (ex: "2-4;8;16-")
 
@@ -1323,7 +1693,9 @@ Notes Module
 
   Module: notes
 
-**storenote <from> <to> <msg> <idx>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+storenote <from> <to> <msg> <idx>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: stores a note for later reading, notifies idx of any results (use idx -1 for no notify).
 
@@ -1334,7 +1706,9 @@ Notes Module
 Assoc Module
 ------------
 
-**assoc <chan> [name]**
+^^^^^^^^^^^^^^^^^^^
+assoc <chan> [name]
+^^^^^^^^^^^^^^^^^^^
 
   Description: sets the name associated with a botnet channel, if you specify one
 
@@ -1342,7 +1716,9 @@ Assoc Module
 
   Module: assoc
 
-**killassoc <chan>**
+^^^^^^^^^^^^^^^^
+killassoc <chan>
+^^^^^^^^^^^^^^^^
 
   Description: removes the name associated with a botnet channel, if any exists. Use 'killassoc &' to kill all assocs.
 
@@ -1353,9 +1729,13 @@ Assoc Module
 Compress Module
 ---------------
 
-**compressfile [-level <level>] <src-file> [target-file]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+compressfile [-level <level>] <src-file> [target-file]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 and
-**uncompressfile <src-file> [target-file]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+uncompressfile <src-file> [target-file]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: compresses or un-compresses files. The level option specifies the compression mode to use when compressing. Available modes are from 0 (minimum CPU usage, minimum compression) all the way up to 9 (maximum CPU usage, maximum compression). If you don't specify the target-file, the src-file will be overwritten.
 
@@ -1363,7 +1743,9 @@ and
 
   Module: compress
 
-**iscompressed <filename>**
+^^^^^^^^^^^^^^^^^^^^^^^
+iscompressed <filename>
+^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: determines whether <filename> is gzip compressed. 
 
@@ -1374,7 +1756,9 @@ and
 Filesys Module
 --------------
 
-**setpwd <idx> <dir>**
+^^^^^^^^^^^^^^^^^^
+setpwd <idx> <dir>
+^^^^^^^^^^^^^^^^^^
 
   Description: changes the directory of a file system user, in exactly the same way as a 'cd' command would. The directory can be specified relative or absolute.
 
@@ -1382,25 +1766,33 @@ Filesys Module
 
   Module: filesys
 
-**getpwd <idx>**
+^^^^^^^^^^^^
+getpwd <idx>
+^^^^^^^^^^^^
 
   Returns: the current directory of a file system user
 
   Module: filesys
 
-**getfiles <dir>**
+^^^^^^^^^^^^^^
+getfiles <dir>
+^^^^^^^^^^^^^^
 
   Returns: a list of files in the directory given; the directory is relative to dcc-path
 
   Module: filesys
 
-**getdirs <dir>**
+^^^^^^^^^^^^^
+getdirs <dir>
+^^^^^^^^^^^^^
 
   Returns: a list of subdirectories in the directory given; the directory is relative to dcc-path
 
   Module: filesys
 
-**dccsend <filename> <ircnick>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+dccsend <filename> <ircnick>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: attempts to start a dcc file transfer to the given nick; the filename must be specified either by full pathname or in relation to the bot's startup directory
 
@@ -1424,7 +1816,9 @@ Filesys Module
 
   Module: transfer
 
-**filesend <idx> <filename> [ircnick]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+filesend <idx> <filename> [ircnick]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: like dccsend, except it operates for a current filesystem user, and the filename is assumed to be a relative path from that user's current directory
 
@@ -1432,7 +1826,9 @@ Filesys Module
 
   Module: filesys
 
-**fileresend <idx> <filename> [ircnick]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+fileresend <idx> <filename> [ircnick]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: functions like filesend, only that it sends a DCC RESEND instead of a DCC SEND, which allows people to resume aborted file transfers if their client supports that protocol. ircII/BitchX/etc. support it; mIRC does not.
 
@@ -1440,7 +1836,9 @@ Filesys Module
 
   Module: filesys
 
-**setdesc <dir> <file> <desc>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+setdesc <dir> <file> <desc>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sets the description for a file in a file system directory; the directory is relative to dcc-path
 
@@ -1448,13 +1846,17 @@ Filesys Module
 
   Module: filesys
 
-**getdesc <dir> <file>**
+^^^^^^^^^^^^^^^^^^^^
+getdesc <dir> <file>
+^^^^^^^^^^^^^^^^^^^^
 
   Returns: the description for a file in the file system, if one exists
 
   Module: filesys
 
-**setowner <dir> <file> <handle>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+setowner <dir> <file> <handle>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: changes the owner for a file in the file system; the directory is relative to dcc-path
 
@@ -1462,13 +1864,17 @@ Filesys Module
 
   Module: filesys
 
-**getowner <dir> <file>**
+^^^^^^^^^^^^^^^^^^^^^
+getowner <dir> <file>
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: the owner of a file in the file system
 
   Module: filesys
 
-**setlink <dir> <file> <link>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+setlink <dir> <file> <link>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: creates or changes a linked file (a file that actually exists on another bot); the directory is relative to dcc-path
 
@@ -1476,19 +1882,25 @@ Filesys Module
 
   Module: filesys
 
-**getlink <dir> <file>**
+^^^^^^^^^^^^^^^^^^^^
+getlink <dir> <file>
+^^^^^^^^^^^^^^^^^^^^
 
   Returns: the link for a linked file, if it exists
 
   Module: filesys
 
-**getfileq <handle>**
+^^^^^^^^^^^^^^^^^
+getfileq <handle>
+^^^^^^^^^^^^^^^^^
 
   Returns: list of files queued by someone; each item in the list will be a sublist with two elements: nickname the file is being sent to and the filename
 
   Module: transfer
 
-**getfilesendtime <idx>**
+^^^^^^^^^^^^^^^^^^^^^
+getfilesendtime <idx>
+^^^^^^^^^^^^^^^^^^^^^
 
   Returns: the unixtime value from when a file transfer started, or a negative number:
 
@@ -1500,7 +1912,9 @@ Filesys Module
 
   Module: transfer
 
-**mkdir <directory> [<required-flags> [channel]]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mkdir <directory> [<required-flags> [channel]]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: creates a directory in the file system. Only users with the required flags may access it.
 
@@ -1518,7 +1932,9 @@ Filesys Module
 
   Module: filesys
 
-**rmdir <directory>**
+^^^^^^^^^^^^^^^^^
+rmdir <directory>
+^^^^^^^^^^^^^^^^^
 
   Description: removes a directory from the file system.
 
@@ -1526,7 +1942,9 @@ Filesys Module
 
   Module: filesys
 
-**mv <file> <destination>**
+^^^^^^^^^^^^^^^^^^^^^^^
+mv <file> <destination>
+^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: moves a file from its source to the given destination. The file can also be a mask, such as /incoming/\*, provided the destination is a directory.
 
@@ -1544,7 +1962,9 @@ Filesys Module
 
   Module: filesys
 
-**cp <file> <destination>**
+^^^^^^^^^^^^^^^^^^^^^^^
+cp <file> <destination>
+^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: copies a file from its source to the given destination. The file can also be a mask, such as /incoming/\*, provided the destination is a directory.
 
@@ -1562,13 +1982,17 @@ Filesys Module
 
   Module: filesys
 
-**getflags <dir>**
+^^^^^^^^^^^^^^
+getflags <dir>
+^^^^^^^^^^^^^^
 
   Returns: the flags required to access a directory
 
   Module: filesys
 
-**setflags <dir> [<flags> [channel]]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+setflags <dir> [<flags> [channel]]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: sets the flags required to access a directory
 
@@ -1579,7 +2003,9 @@ Filesys Module
 Miscellaneous Commands
 ----------------------
 
-**bind <type> <flags> <keyword/mask> [proc-name]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bind <type> <flags> <keyword/mask> [proc-name]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: You can use the 'bind' command to attach Tcl procedures to certain events. flags are the flags the user must have to trigger the event (if applicable). proc-name is the name of the Tcl procedure to call for this command (see below for the format of the procedure call). If the proc-name is omitted, no binding is added. Instead, the current binding is returned (if it's stackable, a list of the current bindings is returned).
 
@@ -1587,7 +2013,9 @@ Miscellaneous Commands
 
   Module: core
 
-**unbind <type> <flags> <keyword/mask> <proc-name>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+unbind <type> <flags> <keyword/mask> <proc-name>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes a previously created bind
 
@@ -1595,14 +2023,18 @@ Miscellaneous Commands
 
   Module: core
 
-**binds [type/mask]**
+^^^^^^^^^^^^^^^^^
+binds [type/mask]
+^^^^^^^^^^^^^^^^^
 
   Returns: a list of Tcl binds, each item in the list is a sublist of five elements:
         {<type> <flags> <name> <hits> <proc>}
 
   Module: core
 
-**logfile [<modes> <channel> <filename>]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+logfile [<modes> <channel> <filename>]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: creates a new logfile, which will log the modes given for the channel listed. If no logfile is specified, a list of existing logfiles will be returned. "*" indicates all channels. You can also change the modes and channel of an existing logfile with this command. Entering a blank mode and channel ("") makes the bot stop logging there.
 
@@ -1615,11 +2047,15 @@ Miscellaneous Commands
   +-----+---------------------------------------------------------------------+
   | d   | misc debug information                                              |
   +-----+---------------------------------------------------------------------+
-  | h   | raw share traffic                                                   |
+  | g   | raw outgoing share traffic                                          |
+  +-----+---------------------------------------------------------------------+
+  | h   | raw incoming share traffic                                          |
   +-----+---------------------------------------------------------------------+
   | j   | joins, parts, quits, topic changes, and netsplits on the channel    |
   +-----+---------------------------------------------------------------------+
   | k   | kicks, bans, and mode changes on the channel                        |
+  +-----+---------------------------------------------------------------------+
+  | l   | linked bot messages                                                 |
   +-----+---------------------------------------------------------------------+
   | m   | private msgs, notices and ctcps to the bot                          |
   +-----+---------------------------------------------------------------------+
@@ -1631,7 +2067,9 @@ Miscellaneous Commands
   +-----+---------------------------------------------------------------------+
   | s   | server connects, disconnects, and notices                           |
   +-----+---------------------------------------------------------------------+
-  | t   | raw botnet traffic                                                  |
+  | t   | raw incoming botnet traffic                                         |
+  +-----+---------------------------------------------------------------------+
+  | u   | raw outgoing botnet traffic                                         |
   +-----+---------------------------------------------------------------------+
   | v   | raw outgoing server traffic                                         |
   +-----+---------------------------------------------------------------------+
@@ -1644,7 +2082,9 @@ Miscellaneous Commands
 
   Module: core
 
-**maskhost <nick!user@host> [masktype]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+maskhost <nick!user@host> [masktype]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: masked hostmask for the string given according to the masktype (the default is 3).
 
@@ -1676,11 +2116,13 @@ Miscellaneous Commands
   0 to 9, but instead of using a * wildcard to replace portions of the
   host, only numbers in hostnames are replaced with the '?' wildcard.
   Same is valid for types 20-29, but instead of '?', the '*' wildcard
-  will be used.
+  will be used. Types 30-39 set the host to '*'.
 
   Module: core
 
-**timer <minutes> <tcl-command> [count]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+timer <minutes> <tcl-command> [count]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: executes the given Tcl command after a certain number of minutes have passed. If count is specified, the command will be executed count times with the given interval in between. If you specify a count of 0, the timer will repeat until it's removed with killtimer or until the bot is restarted.
 
@@ -1688,7 +2130,9 @@ Miscellaneous Commands
 
   Module: core
 
-**utimer <seconds> <tcl-command> [count]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+utimer <seconds> <tcl-command> [count]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: executes the given Tcl command after a certain number of seconds have passed. If count is specified, the command will be executed count times with the given interval in between. If you specify a count of 0, the utimer will repeat until it's removed with killutimer or until the bot is restarted.
 
@@ -1696,19 +2140,25 @@ Miscellaneous Commands
 
   Module: core
 
-**timers**
+^^^^^^
+timers
+^^^^^^
 
   Returns: a list of active minutely timers. Each entry in the list contains the number of minutes left till activation, the command that will be executed, the timerID, and the remaining number of repeats.
 
   Module: core
 
-**utimers**
+^^^^^^^
+utimers
+^^^^^^^
 
   Returns: a list of active secondly timers. Each entry in the list contains the number of minutes left till activation, the command that will be executed, the timerID, and the remaining number of repeats.
 
   Module: core
 
-**killtimer <timerID>**
+^^^^^^^^^^^^^^^^^^^
+killtimer <timerID>
+^^^^^^^^^^^^^^^^^^^
 
   Description: removes a minutely timer from the list
 
@@ -1716,7 +2166,9 @@ Miscellaneous Commands
 
   Module: core
 
-**killutimer <timerID>**
+^^^^^^^^^^^^^^^^^^^^
+killutimer <timerID>
+^^^^^^^^^^^^^^^^^^^^
 
   Description: removes a secondly timer from the list
 
@@ -1724,43 +2176,57 @@ Miscellaneous Commands
 
   Module: core
 
-**unixtime**
+^^^^^^^^
+unixtime
+^^^^^^^^
 
   Returns: a long integer which represents the number of seconds that have passed since 00:00 Jan 1, 1970 (GMT).
 
   Module: core
 
-**duration <seconds>**
+^^^^^^^^^^^^^^^^^^
+duration <seconds>
+^^^^^^^^^^^^^^^^^^
 
   Returns: the number of seconds converted into years, weeks, days, hours, minutes, and seconds. 804600 seconds is turned into 1 week 2 days 7 hours 30 minutes.
 
   Module: core
 
-**strftime <formatstring> [time]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+strftime <formatstring> [time]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns: a formatted string of time using standard strftime format. If time is specified, the value of the specified time is used. Otherwise, the current time is used.
 
   Module: core
 
-**ctime <unixtime>**
+^^^^^^^^^^^^^^^^
+ctime <unixtime>
+^^^^^^^^^^^^^^^^
 
   Returns: a formatted date/time string based on the current locale settings from the unixtime string given; for example "Fri Aug 3 11:34:55 1973"
 
   Module: core
 
-**myip**
+^^^^
+myip
+^^^^
 
   Returns: a long number representing the bot's IP address, as it might appear in (for example) a DCC request
 
   Module: core
 
-**rand <limit>**
+^^^^^^^^^^^^
+rand <limit>
+^^^^^^^^^^^^
 
   Returns: a random integer between 0 and limit-1
 
   Module: core
 
-**control <idx> <command>**
+^^^^^^^^^^^^^^^^^^^^^^^
+control <idx> <command>
+^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: removes an idx from the party line and sends all future input to the Tcl command given. The command will be called with two parameters: the idx and the input text. The command should return 0 to indicate success and 1 to indicate that it relinquishes control of the user back to the bot. If the input text is blank (""), it indicates that the connection has been dropped. Also, if the input text is blank, never call killdcc on it, as it will fail with "invalid idx".
 
@@ -1768,7 +2234,9 @@ Miscellaneous Commands
 
   Module: core
 
-**sendnote <from> <to[@bot]> <message>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sendnote <from> <to[@bot]> <message>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: simulates what happens when one user sends a note to another
 
@@ -1790,7 +2258,9 @@ Miscellaneous Commands
 
   Module: core
 
-**link [via-bot] <bot>**
+^^^^^^^^^^^^^^^^^^^^
+link [via-bot] <bot>
+^^^^^^^^^^^^^^^^^^^^
 
   Description: attempts to link to another bot directly. If you specify a via-bot, it tells the via-bot to attempt the link.
 
@@ -1798,7 +2268,9 @@ Miscellaneous Commands
 
   Module: core
 
-**unlink <bot>**
+^^^^^^^^^^^^
+unlink <bot>
+^^^^^^^^^^^^
 
   Description: attempts to unlink a bot from the botnet
 
@@ -1806,25 +2278,33 @@ Miscellaneous Commands
 
   Module: core
 
-**encrypt <key> <string>**
+^^^^^^^^^^^^^^^^^^^^^^
+encrypt <key> <string>
+^^^^^^^^^^^^^^^^^^^^^^
 
-  Returns: encrypted string (using the currently loaded encryption module), encoded into ASCII using base-64
-
-  Module: encryption
-
-**decrypt <key> <encrypted-base64-string>**
-
-  Returns: decrypted string (using the currently loaded encryption module)
+  Returns: encrypted string (using the currently loaded encryption module), encoded into ASCII using base-64. As of v1.8.3, the default blowfish encryption module can use either the older ECB mode (currently used by default for compatibility reasons), or the more recent and more-secure CBC mode. You can explicitely request which encryption mode to use by prefixing the encryption key with either "ecb:" or "cbc:", or by using the blowfish-use-mode setting in the config file. Note: the default encryption mode for this function is planned to transition from ECB to CBC in v1.9.0.
 
   Module: encryption
 
-**encpass <password>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+decrypt <key> <encrypted-base64-string>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Returns: decrypted string (using the currently loaded encryption module). If the default blowfish encryption module is used, this automatically picks the right decryption mode. You may still prefix the key with "ecb:" or "cbc:" or use the blowfish-use-mode setting in the config file (see the encrypt command for more detailed information).
+
+  Module: encryption
+
+^^^^^^^^^^^^^^^^^^
+encpass <password>
+^^^^^^^^^^^^^^^^^^
 
   Returns: encrypted string (using the currently loaded encryption module)
 
   Module: encryption
 
-**die [reason]**
+^^^^^^^^^^^^
+die [reason]
+^^^^^^^^^^^^
 
   Description: causes the bot to log a fatal error and exit completely. If no reason is given, "EXIT" is used.
 
@@ -1832,13 +2312,17 @@ Miscellaneous Commands
 
   Module: core
 
-**unames**
+^^^^^^
+unames
+^^^^^^
 
   Returns: the current operating system the bot is using
 
   Module: core
 
-**dnslookup <ip-address/hostname> <proc> [[arg1] [arg2] ... [argN]]**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+dnslookup <ip-address/hostname> <proc> [[arg1] [arg2] ... [argN]]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: This issues an asynchronous dns lookup request. The command will block if dns module is not loaded; otherwise it will either return immediately or immediately call the specified proc (e.g. if the lookup is already cached).
 
@@ -1852,13 +2336,17 @@ Miscellaneous Commands
 
   Module: core
 
-**md5 <string>**
+^^^^^^^^^^^^
+md5 <string>
+^^^^^^^^^^^^
 
   Returns: the 128 bit MD5 message-digest of the specified string
 
   Module: core
 
-**callevent <event>**
+^^^^^^^^^^^^^^^^^
+callevent <event>
+^^^^^^^^^^^^^^^^^
 
   Description: triggers the evnt bind manually for a certain event. You can call arbitrary events here, even ones that are not pre-defined by Eggdrop. For example: callevent rehash, or callevent myownevent123.
 
@@ -1866,18 +2354,24 @@ Miscellaneous Commands
 
   Module: core
 
-**traffic**
+^^^^^^^
+traffic
+^^^^^^^
 
   Returns: a list of sublists containing information about the bot's traffic usage in bytes. Each sublist contains five elements: type, in-traffic today, in-traffic total, out-traffic today, out-traffic total (in that order).
 
   Module: core
 
-**modules**
+^^^^^^^
+modules
+^^^^^^^
   Returns: a list of sublists containing information about the bot's currently loaded modules. Each sublist contains three elements: module, version, and dependencies. Each dependency is also a sublist containing the module name and version.
 
   Module: core
 
-**loadmodule <module>**
+^^^^^^^^^^^^^^^^^^^
+loadmodule <module>
+^^^^^^^^^^^^^^^^^^^
 
   Description: attempts to load the specified module.
 
@@ -1885,7 +2379,9 @@ Miscellaneous Commands
 
   Module: core
 
-**unloadmodule <module>**
+^^^^^^^^^^^^^^^^^^^^^
+unloadmodule <module>
+^^^^^^^^^^^^^^^^^^^^^
 
   Description: attempts to unload the specified module.
 
@@ -1893,7 +2389,9 @@ Miscellaneous Commands
 
   Module: core
 
-**loadhelp <helpfile-name>**
+^^^^^^^^^^^^^^^^^^^^^^^^
+loadhelp <helpfile-name>
+^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: attempts to load the specified help file from the help/ directory.
 
@@ -1901,7 +2399,9 @@ Miscellaneous Commands
 
   Module: core
 
-**unloadhelp <helpfile-name>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+unloadhelp <helpfile-name>
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: attempts to unload the specified help file.
 
@@ -1909,7 +2409,9 @@ Miscellaneous Commands
 
   Module: core
 
-**reloadhelp**
+^^^^^^^^^^
+reloadhelp
+^^^^^^^^^^
 
   Description: reloads the bot's help files.
 
@@ -1917,7 +2419,9 @@ Miscellaneous Commands
 
   Module: core
 
-**restart**
+^^^^^^^
+restart
+^^^^^^^
 
   Description: rehashes the bot, kills all timers, reloads all modules, and reconnects the bot to the next server in its list.
 
@@ -1925,7 +2429,9 @@ Miscellaneous Commands
 
   Module: core
 
-**rehash**
+^^^^^^
+rehash
+^^^^^^
 
   Description: rehashes the bot
 
@@ -1933,7 +2439,9 @@ Miscellaneous Commands
 
   Module: core
 
-**stripcodes <strip-flags> <string>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stripcodes <strip-flags> <string>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: strips specified control characters from the string given. strip-flags can be any combination of the following:
 
@@ -1961,7 +2469,9 @@ Miscellaneous Commands
 
   Module: core
 
-**matchaddr <hostmask> <address>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+matchaddr <hostmask> <address>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: checks if the address matches the hostmask given. The address should be in the form nick!user\@host.
 
@@ -1969,17 +2479,21 @@ Miscellaneous Commands
 
   Module: core
 
-**matchcidr <block> <address> <prefix>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+matchcidr <block> <address> <prefix>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: performs a cidr match on the specified ip addresses. IPv6 is supported, if enabled at compile time.
 
-  Example: matchcidr 192.1.8.1.0 192.168.1.17 16
+  Example: matchcidr 192.168.0.0 192.168.1.17 16
 
   Returns: 1 if the address matches the block prefix, 0 otherwise.
 
   Module: core
 
-**matchstr <pattern> <string>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+matchstr <pattern> <string>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: checks if pattern matches string. Only two wildcards are supported: '*' and '?'. Matching is case-insensitive. This command is intended as a simplified alternative to Tcl's string match.  
 
@@ -1987,7 +2501,9 @@ Miscellaneous Commands
 
   Module: core
 
-**rfcequal <string1> <string2>**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rfcequal <string1> <string2>
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Description: Checks if two strings are equal. Case is ignored, and this uses RFC1459 matching {}|~ == []\^, depending on the rfc_compliant setting.
 
@@ -1995,7 +2511,9 @@ Miscellaneous Commands
 
   Module: core
 
-**status [type]**
+^^^^^^^^^^^^^
+status [type]
+^^^^^^^^^^^^^
 
   Description: provides eggdrop status information similar to the .status command in partyline. The available types of information are:
 
@@ -2013,7 +2531,9 @@ Miscellaneous Commands
 
   Module: core
 
-**istls <idx>**
+^^^^^^^^^^^
+istls <idx>
+^^^^^^^^^^^
 
   Description: checks if a connection is encrypted or cleartext. This command is available on TLS-enabled bots only.
 
@@ -2021,7 +2541,9 @@ Miscellaneous Commands
 
   Module: core
 
-**starttls <idx>**
+^^^^^^^^^^^^^^
+starttls <idx>
+^^^^^^^^^^^^^^
 
   Description: establishes a secure (using TLS) connection over idx. The TLS connection should be first negotiated over the plaintext link, or using other means. Both parties must switch to TLS simultaneously. This command is available on TLS-enabled bots only.
 
@@ -2029,7 +2551,9 @@ Miscellaneous Commands
 
   Module: core
 
-**tlsstatus <idx>**
+^^^^^^^^^^^^^^^
+tlsstatus <idx>
+^^^^^^^^^^^^^^^
 
   Description: provides information about an established TLS connection This includes certificate and cipher information as well as protocol version. This command is available on TLS-enabled bots only.
 
@@ -2042,35 +2566,47 @@ Global Variables
 
 NOTE: All config file variables are also global.
 
-**botnick**
+^^^^^^^
+botnick
+^^^^^^^
 
   Value: the current nickname the bot is using (for example: "Valis", "Valis0", etc.)
 
   Module: server
 
-**botname**
+^^^^^^^
+botname
+^^^^^^^
 
   Value: the current nick!user\@host that the server sees (for example: "Valis!valis\@crappy.com")
 
   Module: server
 
-**server**
+^^^^^^
+server
+^^^^^^
 
   Value: the current server's real name (what server calls itself) and port bot is connected to (for example: "irc.math.ufl.edu:6667") Note that this does not necessarily match the servers internet address.
 
   Module: server
 
-**serveraddress**
+^^^^^^^^^^^^^
+serveraddress
+^^^^^^^^^^^^^
   Value: the current server's internet address (hostname or IP) and port bot is connected to. This will correspond to the entry in server list (for example: "eu.undernet.org:6667"). Note that this does not necessarily match the name server calls itself.
 
   Module: server
 
-**version**
+^^^^^^^
+version
+^^^^^^^
   Value: current bot version "1.1.2+pl1 1010201"; first item is the text version, to include a patch string if present, and second item is a numerical version
 
   Module: core
 
-**numversion** 
+^^^^^^^^^^^
+numversion*
+^^^^^^^^^^^
   Value: the current numeric bot version (for example: "1010201"). Numerical version is in the format of "MNNRRPP", where:
 
   +------+---------------------------------------+
@@ -2085,33 +2621,52 @@ NOTE: All config file variables are also global.
 
   Module: core
 
-**uptime**
+^^^^^^
+uptime
+^^^^^^
   Value: the unixtime value for when the bot was started
 
   Module: core
 
-**server-online**
+^^^^^^^^^^^^^
+server-online
+^^^^^^^^^^^^^
   Value: the unixtime value for when the bot connected to its current server
 
   Module: server
 
-**lastbind**
+^^^^^^^^
+lastbind
+^^^^^^^^
   Value: the last command binding which was triggered. This allows you to identify which command triggered a Tcl proc.
 
   Module: core
 
-**isjuped**
+^^^^^^^
+isjuped
+^^^^^^^
   Value: 1 if bot's nick is juped(437); 0 otherwise
 
   Module: server
 
-**handlen**
+^^^^^^^
+handlen
+^^^^^^^
   Value: the value of the HANDLEN define in src/eggdrop.h
 
   Module: core
 
-**config**
+^^^^^^
+config
+^^^^^^
   Value: the filename of the config file Eggdrop is currently using
+
+  Module: core
+
+^^^^^^^^^^^^^
+configureargs
+^^^^^^^^^^^^^
+  Value: a string (not list) of configure arguments in shell expansion (single quotes)
 
   Module: core
 
@@ -2864,7 +3419,7 @@ are the four special characters:
 |     | word) (This character only works in binds, not in regular matching)      |
 +-----+--------------------------------------------------------------------------+
 | ~   | matches 1 or more space characters (can be used for whitespace between   |
-|     | words) (This char only works in binds, not in regluar matching)          |
+|     | words) (This char only works in binds, not in regular matching)          |
 +-----+--------------------------------------------------------------------------+
 
-  Copyright (C) 1999 - 2017 Eggheads Development Team
+  Copyright (C) 1999 - 2018 Eggheads Development Team

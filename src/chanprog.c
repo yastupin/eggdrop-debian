@@ -9,7 +9,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,11 +41,12 @@
 
 #include "modules.h"
 
+extern struct dcc_t *dcc;
 extern struct userrec *userlist;
 extern log_t *logs;
 extern Tcl_Interp *interp;
 extern char ver[], botnetnick[], firewall[], motdfile[], userfile[], helpdir[],
-            tempdir[], moddir[], notify_new[], owner[], configfile[];
+            moddir[], notify_new[], configfile[];
 extern time_t now, online_since;
 extern int backgrd, term_z, con_chan, cache_hit, cache_miss, firewallport,
            default_flags, max_logs, conmask, protect_readonly, make_userfile,
@@ -62,6 +63,7 @@ struct chanset_t *chanset = NULL;  /* Channel list                 */
 char admin[121] = "";              /* Admin info                   */
 char origbotname[NICKLEN + 1];
 char botname[NICKLEN + 1];         /* Primary botname              */
+char owner[121] = "";              /* Permanent botowner(s)        */
 
 
 /* Remove leading and trailing whitespaces.
@@ -395,11 +397,9 @@ void tell_settings(int idx)
   dprintf(idx, "Directories:\n");
 #ifndef STATIC
   dprintf(idx, "  Help   : %s\n", helpdir);
-  dprintf(idx, "  Temp   : %s\n", tempdir);
   dprintf(idx, "  Modules: %s\n", moddir);
 #else
   dprintf(idx, "  Help: %s\n", helpdir);
-  dprintf(idx, "  Temp: %s\n", tempdir);
 #endif
   fr.global = default_flags;
 
@@ -447,13 +447,11 @@ void reaffirm_owners()
 void chanprog()
 {
   int i;
-  FILE *f;
-  char s[161], rands[8];
 
   admin[0]   = 0;
   helpdir[0] = 0;
-  tempdir[0] = 0;
-  conmask    = 0;
+  /* default mkcoblxs */
+  conmask = LOG_MSGS|LOG_MODES|LOG_CMDS|LOG_MISC|LOG_BOTS|LOG_BOTMSG|LOG_FILES|LOG_SERV;
 
   for (i = 0; i < max_logs; i++)
     logs[i].flags |= LF_EXPIRING;
@@ -517,25 +515,6 @@ void chanprog()
     if (helpdir[strlen(helpdir) - 1] != '/')
       strcat(helpdir, "/");
 
-  if (tempdir[0])
-    if (tempdir[strlen(tempdir) - 1] != '/')
-      strcat(tempdir, "/");
-
-  /* Test tempdir: it's vital. */
-
-  /* Possible file race condition solved by using a random string
-   * and the process id in the filename.
-   * FIXME: This race is only partitially fixed. We could still be
-   *        overwriting an existing file / following a malicious
-   *        link.
-   */
-  make_rand_str(rands, 7); /* create random string */
-  sprintf(s, "%s.test-%u-%s", tempdir, getpid(), rands);
-  f = fopen(s, "w");
-  if (f == NULL)
-    fatal(MISC_CANTWRITETEMP, 0);
-  fclose(f);
-  unlink(s);
   reaffirm_owners();
   check_tcl_event("userfile-loaded");
 }
@@ -556,6 +535,7 @@ void reload()
   if (!readuserfile(userfile, &userlist))
     fatal(MISC_MISSINGUSERF, 0);
   reaffirm_owners();
+  add_hq_user();
   check_tcl_event("userfile-loaded");
   call_hook(HOOK_READ_USERFILE);
 }
@@ -568,6 +548,7 @@ void rehash()
   noshare = 0;
   userlist = NULL;
   chanprog();
+  add_hq_user();
 }
 
 /*
@@ -717,4 +698,31 @@ int isowner(char *name)
   } while (*ptr);
 
   return 0;
+}
+
+/*
+ * Adds the -HQ user to the userlist and takes care of needed permissions
+ */
+void add_hq_user()
+{
+  if (!backgrd && term_z > 0 && userlist) {
+    /* HACK: Workaround using dcc[].nick not to pass literal "-HQ" as a non-const arg */
+    dcc[term_z].user = get_user_by_handle(userlist, dcc[term_z].nick);
+    /* Make sure there's an innocuous -HQ user if needed */
+    if (!dcc[term_z].user) {
+      userlist = adduser(userlist, dcc[term_z].nick, "none", "-", USER_PARTY);
+      dcc[term_z].user = get_user_by_handle(userlist, dcc[term_z].nick);
+    }
+    /* Give all useful flags: efjlmnoptuvx */
+    dcc[term_z].user->flags = USER_EXEMPT | USER_FRIEND | USER_JANITOR |
+                              USER_HALFOP | USER_MASTER | USER_OWNER | USER_OP |
+                              USER_PARTY | USER_BOTMAST | USER_UNSHARED |
+                              USER_VOICE | USER_XFER;
+    /* Add to permowner list if there's place */
+    if (strlen(owner) + sizeof EGG_BG_HANDLE < sizeof owner)
+      strcat(owner, " " EGG_BG_HANDLE);
+
+    /* Update laston info, gets cleared at rehash/reload */
+    touch_laston(dcc[term_z].user, "partyline", now);
+  }
 }

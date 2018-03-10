@@ -12,7 +12,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -693,10 +693,10 @@ int readuserfile(char *file, struct userrec **ret)
   /* read opening comment */
   s = buf;
   if (fgets(s, 180, f) != NULL) {
-    if (s[1] < '4') {
+    if (s[0] == '#' && s[1] < '4' && s[1] >= '0' && s[2] == 'v') {
       fatal(USERF_OLDFMT, 0);
     }
-    if (s[1] > '4')
+    if (s[0] != '#' || s[1] > '4' || s[2] != 'v')
       fatal(USERF_INVALID, 0);
   }
   /* don't check for feof after fgets, skips last line if it has no \n (ie on windows) */
@@ -1071,8 +1071,7 @@ void autolink_cycle(char *start)
             char *p = MISC_REJECTED;
 
             /* we're directly connected to the offending bot?! (shudder!) */
-            putlog(LOG_BOTS, "*", "%s %s", BOT_REJECTING, dcc[i].nick);
-            chatout("*** %s bot %s\n", p, dcc[i].nick);
+            putlog(LOG_BOTS, "*", "%s bot %s.", p, dcc[i].nick);
             botnet_send_unlinked(i, dcc[i].nick, p);
             dprintf(i, "bye %s\n", BOT_REJECTING);
             killsock(dcc[i].sock);

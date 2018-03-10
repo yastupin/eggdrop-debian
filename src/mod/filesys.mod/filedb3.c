@@ -6,7 +6,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1052,21 +1052,11 @@ static void remote_filereq(int idx, char *from, char *file)
         reject = FILES_NOSHARE;
       else {
         s1 = nmalloc(strlen(dccdir) + strlen(dir) + strlen(what) + 2);
-        /* Copy to /tmp if needed */
         sprintf(s1, "%s%s%s%s", dccdir, dir, dir[0] ? "/" : "", what);
-        if (copy_to_tmp) {
-          s = nmalloc(strlen(tempdir) + strlen(what) + 1);
-          sprintf(s, "%s%s", tempdir, what);
-          copyfile(s1, s);
-        } else
-          s = s1;
-        i = raw_dcc_send(s, "*remote", FILES_REMOTE, s);
+        i = raw_dcc_send(s1, "*remote", FILES_REMOTE);
         if (i > 0) {
-          wipe_tmp_filename(s, -1);
           reject = FILES_SENDERR;
         }
-        if (s1 != s)
-          my_free(s);
         my_free(s1);
       }
       free_fdbe(&fdbe);
@@ -1083,9 +1073,13 @@ static void remote_filereq(int idx, char *from, char *file)
   }
   /* Grab info from dcc struct and bounce real request across net */
   i = dcc_total - 1;
-  s = nmalloc(46);              /* Enough? */
-  /* Indeed, no more, no less ^^ */
-  getdccaddr(&dcc[i].sockname, s, 46);
+#ifdef IPV6
+  s = nmalloc(INET6_ADDRSTRLEN);
+  getdccaddr(&dcc[i].sockname, s, INET6_ADDRSTRLEN);
+#else
+  s = nmalloc(INET_ADDRSTRLEN);
+  getdccaddr(&dcc[i].sockname, s, INET_ADDRSTRLEN);
+#endif
   simple_sprintf(s, "%s %u %d", s, dcc[i].port, dcc[i].u.xfer->length);
   botnet_send_filesend(idx, s1, from, s);
   putlog(LOG_FILES, "*", FILES_REMOTEREQ, dir, dir[0] ? "/" : "", what);

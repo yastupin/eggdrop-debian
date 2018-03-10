@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,7 +48,7 @@ static Function *global = NULL, *transfer_funcs = NULL, *channels_funcs = NULL;
 
 static int private_global = 0;
 static int private_user = 0;
-static char private_globals[50];
+static char private_globals[51];
 static int allow_resync = 0;
 static struct flag_record fr = { 0, 0, 0, 0, 0, 0 };
 static int resync_time = 900;
@@ -529,6 +529,45 @@ static void share_killuser(int idx, char *par)
   }
 }
 
+/*
+ * "s nc <chan>"
+ * Received when another bot adds a chan.
+ * We (re)send the "s a <user> <flags> <chan>" for this specific chan if
+ * this chan is known to us and <user> has <flags> for this chan
+ */
+static void share_newchan(int idx, char *par)
+{
+  struct userrec *u;
+  struct chanset_t *ch;
+
+  if ((dcc[idx].status & STAT_SHARE) && !private_user) {
+
+    /* Do we have chan as well and do we share it? */
+    if ((ch = findchan_by_dname(par)) && channel_shared(ch)) {
+
+      /* Go over users and check if it has flags for that chan */
+      for (u = userlist; u->next; u = u->next) {
+        /* Only for shared users */
+        if (!(u->flags & USER_UNSHARED)) {
+          struct flag_record fr = { FR_CHAN, 0, 0, 0, 0, 0 };
+          char buffer[100];
+
+          get_user_flagrec(u, &fr, par);
+
+          if (fr.chan) {
+            /* send flags to bot requesting */
+            build_flags(buffer, &fr, NULL);
+            dprintf(idx, "s a %s %s %s\n", u->handle, buffer, par);
+          }
+        }
+      }
+    }
+
+    /* Log, don't shareout to other bots */
+    putlog(LOG_CMDS, "*", "%s: newchan %s", dcc[idx].nick, par);
+  }
+}
+
 static void share_pls_host(int idx, char *par)
 {
   char *hand;
@@ -819,6 +858,8 @@ static void share_pls_ban(int idx, char *par)
   time_t expire_time;
   char *ban, *tm, *from;
   int flags = 0;
+  module_entry *me;
+  struct chanset_t *chan = NULL;
 
   if (dcc[idx].status & STAT_SHARE) {
     shareout_but(NULL, idx, "+b %s\n", par);
@@ -838,6 +879,11 @@ static void share_pls_ban(int idx, char *par)
     u_addban(NULL, ban, from, par, expire_time, flags);
     putlog(LOG_CMDS, "*", "%s: global ban %s (%s:%s)", dcc[idx].nick, ban,
            from, par);
+    /* check ban against users in chans */
+    if ((me = module_find("irc", 0, 0)))
+      for (chan = chanset; chan != NULL; chan = chan->next)
+        if (channel_shared(chan) && (bot_chan(fr) || bot_global(fr)))
+          (me->funcs[IRC_CHECK_THIS_BAN]) (chan, ban, flags & MASKREC_STICKY);
     noshare = 0;
   }
 }
@@ -848,6 +894,7 @@ static void share_pls_banchan(int idx, char *par)
   int flags = 0;
   struct chanset_t *chan;
   char *ban, *tm, *chname, *from;
+  module_entry *me;
 
   if (dcc[idx].status & STAT_SHARE) {
     ban = newsplit(&par);
@@ -876,6 +923,9 @@ static void share_pls_banchan(int idx, char *par)
       if (expire_time != 0L)
         expire_time += now;
       u_addban(chan, ban, from, par, expire_time, flags);
+      /* check ban against users in chan */
+      if ((me = module_find("irc", 0, 0)))
+        (me->funcs[IRC_CHECK_THIS_BAN]) (chan, ban, flags & MASKREC_STICKY);
       noshare = 0;
     }
   }
@@ -1116,7 +1166,7 @@ static void share_userfileq(int idx, char *par)
  */
 static void share_ufsend(int idx, char *par)
 {
-  char *ip = NULL, *port;
+  char *port;
   char s[1024];
   int i, sock;
   FILE *f;
@@ -1130,21 +1180,27 @@ static void share_ufsend(int idx, char *par)
     putlog(LOG_MISC, "*", "NO MORE DCC CONNECTIONS -- can't grab userfile");
     dprintf(idx, "s e I can't open a DCC to you; I'm full.\n");
     zapfbot(idx);
-  } else if (!(f = fopen(s, "wb"))) {
+  } else if (copy_to_tmp && !(f = tmpfile())) {
+    putlog(LOG_MISC, "*", "CAN'T WRITE TEMPORARY USERFILE DOWNLOAD FILE!");
+    zapfbot(idx);
+  } else if (!copy_to_tmp && !(f = fopen(s, "wb"))) {
     putlog(LOG_MISC, "*", "CAN'T WRITE USERFILE DOWNLOAD FILE!");
     zapfbot(idx);
   } else {
-    ip = newsplit(&par);
+    /* Ignore longip and use botaddr, arg kept for backward compat for pre 1.8.3 */
+    newsplit(&par);
     port = newsplit(&par);
     i = new_dcc(&DCC_FORK_SEND, sizeof(struct xfer_info));
+    /* Use same addr we succesfully linked to and change port */
+    memcpy(&dcc[i].sockname, &dcc[idx].sockname, sizeof dcc[i].sockname);
     dcc[i].port = atoi(port);
-    (void) setsockname(&dcc[i].sockname, ip, dcc[i].port, 0);
+    setsnport(dcc[i].sockname, dcc[i].port);
     /* Don't buffer this -> mark binary. */
     sock = getsock(dcc[i].sockname.family, SOCK_BINARY);
 #ifdef TLS
     if (sock < 0 || (open_telnet_raw(sock, &dcc[i].sockname) < 0) ||
         (*port == '+' && ssl_handshake(sock, TLS_CONNECT, tls_vfybots,
-        LOG_MISC, ip, NULL))) {
+        LOG_MISC, dcc[i].host, NULL))) {
 #else
     if (sock < 0 || open_telnet_raw(sock, &dcc[i].sockname) < 0) {
 #endif
@@ -1296,6 +1352,7 @@ static botcmd_t C_share[] = {
   {"h",        (IntFunc) share_chhand},
   {"k",        (IntFunc) share_killuser},
   {"n",        (IntFunc) share_newuser},
+  {"nc",       (IntFunc) share_newchan},
   {"r!",       (IntFunc) share_resync},
   {"r?",       (IntFunc) share_resyncq},
   {"rn",       (IntFunc) share_resync_no},
@@ -1323,7 +1380,7 @@ static void sharein_mod(int idx, char *msg)
     if (!y)
       /* Found a match */
       (C_share[i].func) (idx, msg);
-    if (y < 0)
+    if (y <= 0)
       f = 1;
   }
 }
@@ -1904,7 +1961,7 @@ static void start_sending_users(int idx)
 #ifdef IPV6
   char s[INET6_ADDRSTRLEN];
 #else
-  char s[sizeof "255.255.255.255"];
+  char s[INET_ADDRSTRLEN];
 #endif
 
   egg_snprintf(share_file, sizeof share_file, ".share.%s.%lu", dcc[idx].nick,
@@ -1926,7 +1983,7 @@ static void start_sending_users(int idx)
     return;
   }
 
-  if ((i = raw_dcc_send(share_file, "*users", "(users)", share_file)) > 0) {
+  if ((i = raw_dcc_send(share_file, "*users", "(users)")) > 0) {
     unlink(share_file);
     dprintf(idx, "s e %s\n", USERF_CANTSEND);
     putlog(LOG_BOTS, "*", "%s -- can't send userfile",

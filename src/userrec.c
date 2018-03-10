@@ -6,7 +6,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -572,8 +572,9 @@ void write_userfile(int idx)
   strncpyz(s1, ctime(&tt), sizeof s1);
   fprintf(f, "#4v: %s -- %s -- written %s", ver, botnetnick, s1);
   ok = 1;
+  /* Add all users except the -tn user */
   for (u = userlist; u && ok; u = u->next)
-    if (!write_user(u, f, idx))
+    if (egg_strcasecmp(u->handle, EGG_BG_HANDLE) && !write_user(u, f, idx))
       ok = 0;
   if (!ok || !write_ignores(f, -1) || fflush(f)) {
     putlog(LOG_MISC, "*", "%s (%s)", USERF_ERRWRITE, strerror(ferror(f)));
@@ -593,6 +594,9 @@ int change_handle(struct userrec *u, char *newh)
   char s[HANDLEN + 1];
 
   if (!u)
+    return 0;
+  /* Don't allow the -tn handle to be changed */
+  if (!egg_strcasecmp(u->handle, EGG_BG_HANDLE))
     return 0;
   /* Nothing that will confuse the userfile */
   if (!newh[1] && strchr(BADHANDCHARS, newh[0]))
@@ -919,7 +923,7 @@ void user_del_chan(char *dname)
 int check_conflags(struct flag_record *fr, int md)
 {
   if (!glob_owner(*fr))
-    md &= ~(LOG_RAW | LOG_SRVOUT | LOG_BOTNET | LOG_BOTSHARE);
+    md &= ~(LOG_RAW | LOG_SRVOUT | LOG_BOTNETIN | LOG_BOTNETOUT | LOG_BOTSHRIN | LOG_BOTSHROUT);
   if (!glob_master(*fr)) {
     md &= ~(LOG_FILES | LOG_LEV1 | LOG_LEV2 | LOG_LEV3 | LOG_LEV4 |
             LOG_LEV5 | LOG_LEV6 | LOG_LEV7 | LOG_LEV8 | LOG_DEBUG |
@@ -928,6 +932,6 @@ int check_conflags(struct flag_record *fr, int md)
       md &= ~(LOG_MISC | LOG_CMDS);
   }
   if (!glob_botmast(*fr))
-    md &= ~LOG_BOTS;
+    md &= ~(LOG_BOTS | LOG_BOTMSG);
   return md;
 }

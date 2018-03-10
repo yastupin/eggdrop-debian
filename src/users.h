@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@ struct user_entry_type {
   int (*expmem) (struct user_entry *);
   void (*display) (int idx, struct user_entry *);
   char *name;
+  int (*tcl_append) (Tcl_Interp *, struct userrec *, struct user_entry *);
 };
 
 

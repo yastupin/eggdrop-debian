@@ -6,7 +6,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -308,19 +308,9 @@ typedef int socklen_t;
 #  define free(x)   dont_use_old_free(x)
 #endif /* !COMPILING_MEM */
 
-/* 32 bit type */
-#if (SIZEOF_INT == 4)
-typedef unsigned int u_32bit_t;
-#else
-#  if (SIZEOF_LONG == 4)
-typedef unsigned long u_32bit_t;
-#  else
-#    include "Error: Can't find 32bit type."
-#  endif
-#endif
-
-typedef unsigned short int u_16bit_t;
-typedef unsigned char u_8bit_t;
+typedef uint8_t u_8bit_t;
+typedef uint16_t u_16bit_t;
+typedef uint32_t u_32bit_t;
 
 /* IP type */
 typedef u_32bit_t IP;
@@ -632,9 +622,12 @@ typedef struct {
 #define LOG_DEBUG    0x040000   /* d   debug                            */
 #define LOG_WALL     0x080000   /* w   wallops                          */
 #define LOG_SRVOUT   0x100000   /* v   server output                    */
-#define LOG_BOTNET   0x200000   /* t   botnet traffic                   */
-#define LOG_BOTSHARE 0x400000   /* h   share traffic                    */
-#define LOG_ALL      0x7fffff   /* (dump to all logfiles)               */
+#define LOG_BOTNETIN 0x200000   /* t   incoming botnet traffic          */
+#define LOG_BOTSHRIN 0x400000   /* h   incoming share traffic           */
+#define LOG_BOTNETOUT 0x800000  /* u   outgoing botnet traffic          */
+#define LOG_BOTSHROUT 0x1000000 /* g   outgoing share traffic           */
+#define LOG_BOTMSG   0x2000000  /* l   linked bot messages              */
+#define LOG_ALL      0x3ffffff  /* (dump to all logfiles)               */
 
 /* Internal logfile flags
  */
