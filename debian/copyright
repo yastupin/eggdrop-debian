@@ -1,6 +1,11 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Contact: EggHeads Development Team <eggheads@eggheads.org>
 Source: http://www.eggheads.org/
+
+Files: *
+Copyright: 1997 Robey Pointer
+           1999 - 2011 Eggheads Development Team
+License: GPL-2+
 
 License: GPL-2+
   This program is free software; you can redistribute it and/or modify
@@ -21,11 +26,6 @@ License: GPL-2+
   On Debian systems, the full text of the GNU General Public
   License version 2 can be found in the file
   `/usr/share/common-licenses/GPL-2'
-
-Files: *
-Copyright: 1997 Robey Pointer
-           1999 - 2011 Eggheads Development Team
-License: GPL-2+
 
 Files: src/match.c
 Copyright: Chris Fuller
@@ -60,7 +60,7 @@ License: GPL-1+
 Comment:
   This code was more or less cloned from the ircd-hybrid 5.3 source.
   The original code was written by Otto Harkoonen and even though it
-  it not entirely in synch with section 2.2 of RFC1459 in that it
+  is not entirely in synch with section 2.2 of RFC1459 in that it
   additionally defines carat as an uppercase version of tilde, it's
   what is in the servers themselves so we're going with it this way.
 

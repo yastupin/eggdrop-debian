@@ -1,3 +1,4 @@
+fix language files path
 --- a/src/eggdrop.h
 +++ b/src/eggdrop.h
 @@ -62,7 +62,7 @@

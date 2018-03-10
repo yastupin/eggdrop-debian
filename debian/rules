@@ -4,8 +4,11 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
 %:
-	dh $@ --with autotools_dev,autoreconf
+	dh $@
 
 override_dh_auto_configure:
 	dh_auto_configure -- --with-tcllib=/usr/lib/$(DEB_HOST_MULTIARCH)/libtcl8.6.so --with-tclinc=/usr/include/tcl8.6/tcl.h

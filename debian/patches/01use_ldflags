@@ -1,3 +1,4 @@
+Use $LDFLAGS when linking eggdrop or mods
 --- a/aclocal.m4
 +++ b/aclocal.m4
 @@ -758,7 +758,7 @@

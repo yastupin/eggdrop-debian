@@ -1,3 +1,4 @@
+fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
 --- a/eggdrop-basic.conf
 +++ b/eggdrop-basic.conf
 @@ -1,4 +1,4 @@
