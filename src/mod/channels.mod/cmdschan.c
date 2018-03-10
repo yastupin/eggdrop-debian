@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,7 +39,14 @@ static void cmd_pls_ban(struct userrec *u, int idx, char *par)
     dprintf(idx, "Usage: +ban <hostmask> [channel] [%%<XdXhXm>] [reason]\n");
   } else {
     who = newsplit(&par);
-    if (par[0] && strchr(CHANMETA, par[0]))
+    /* Sanity check for <channel> <ban> vs. <ban> <channel> */
+    if (par[0] && strchr(CHANMETA, who[0])) {
+      chname = who;
+      who = newsplit(&par);
+      dprintf(idx, "Usage: +ban <hostmask> [channel] [%%<XdXhXm>] [reason]\n");
+      dprintf(idx, "Did you mean: .+ban %s %s %s\n", who, chname, par);
+      return;
+    } else if (par[0] && strchr(CHANMETA, par[0]))
       chname = newsplit(&par);
     else
       chname = 0;
@@ -416,7 +423,14 @@ static void cmd_mns_ban(struct userrec *u, int idx, char *par)
     return;
   }
   ban = newsplit(&par);
-  if (par[0] && strchr(CHANMETA, par[0]))
+  /* Sanity check for <channel> <ban> vs. <ban> <channel> */
+  if (par[0] && strchr(CHANMETA, ban[0])) {
+      chname = ban;
+      ban = newsplit(&par);
+      dprintf(idx, "Usage: -ban <hostmask|ban #> [channel]\n");
+      dprintf(idx, "Did you mean: .-ban %s %s\n", ban, chname);
+      return;
+  } else if (par[0] && strchr(CHANMETA, par[0]))
     chname = newsplit(&par);
   else {
     chname = dcc[idx].u.chat->con_chan;
@@ -1515,6 +1529,7 @@ static void cmd_chanset(struct userrec *u, int idx, char *par)
          * just ignore any non global +n's trying to set the need-commands.
          */
         if (strncmp(list[0], "need-", 5) || (u->flags & USER_OWNER)) {
+          Tcl_Interp *irp = NULL;
           if (!strncmp(list[0], "need-", 5) && !(isowner(dcc[idx].nick)) &&
               must_be_owner) {
             dprintf(idx, "Due to security concerns, only permanent owners can set these modes.\n");
@@ -1527,13 +1542,16 @@ static void cmd_chanset(struct userrec *u, int idx, char *par)
            */
           parcpy = nmalloc(strlen(par) + 1);
           strcpy(parcpy, par);
-          if (tcl_channel_modify(0, chan, 2, list) == TCL_OK) {
+          irp = Tcl_CreateInterp();
+          if (tcl_channel_modify(irp, chan, 2, list) == TCL_OK) {
             char tocat[sizeof answers];
             egg_snprintf(tocat, sizeof tocat, "%s { %s }", list[0], parcpy);
             strncat(answers, tocat, sizeof answers - strlen(answers) - 1);
           } else if (!all || !chan->next)
-            dprintf(idx, "Error trying to set %s for %s, invalid option\n",
-                    list[0], all ? "all channels" : chname);
+            dprintf(idx, "Error trying to set %s for %s, %s\n",
+                    list[0], all ? "all channels" : chname, Tcl_GetStringResult(irp));
+          Tcl_ResetResult(irp);
+          Tcl_DeleteInterp(irp);
           nfree(parcpy);
         }
         break;

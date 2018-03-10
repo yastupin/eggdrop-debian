@@ -7,7 +7,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,7 +60,8 @@ static struct user_entry_type USERENTRY_FWD = {
   NULL,
   NULL,
   fwd_display,
-  "FWD"
+  "FWD",
+  NULL
 };
 
 #include "cmdsnote.c"

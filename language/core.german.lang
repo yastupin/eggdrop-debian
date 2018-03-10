@@ -130,7 +130,7 @@ Baue eine Telnetverbindung zu dem Bot auf und gib 'NEW' als Deinen Nickname ein.
 0x537,ODER gehe ins IRC und:  /msg %s hello\n
 0x538,Dies macht Dich zum Master des Bots.
 0x539,BENUTZERDATEI EXISTIERT BEREITS (bitte das '-m' weglassen)
-0x53a,KANN NICHT IN DAS TEMPORAERE VERZEICHNIS SCHREIBEN
+# 0x53a - unused / Unbenutzt
 0x53b,Kann die Benutzerdatei nicht neu laden!
 0x53c,Benutzerdatei fehlt!
 0x53e,%B  (%E)\n\nBitte gib Deinen Nickname ein:\n
@@ -259,15 +259,7 @@ Baue eine Telnetverbindung zu dem Bot auf und gib 'NEW' als Deinen Nickname ein.
 0x673,nick Flood
 
 # EGG_
-0x700,Usage: eggdrop [options] [config-file]\n\n\
-Options:\n\
-  -n   Don't background; send all log entries to console.\n\
-  -nc  Don't background; display channel stats every 10 seconds.\n\
-  -nt  Don't background; use terminal to simulate DCC chat.\n\
-  -m   Create userfile.\n\
-  -h   Show this help.\n\
-  -v   Show version info, then quit.\n\n
-
+#0x700 - unused / Unbenutzt
 0x701,%s scheint in diesem Verzeichnis bereits zu laufen.\n
 0x702,Loesche '%s' wenn das nicht stimmt\n
 0x703,* Warnung!  Konnte Datei %s nicht schreiben!
@@ -418,7 +410,7 @@ Options:\n\
 0xe16,DCC-Verbindung geschlossen (%s!%s)
 0xe17,Einkommende TELNET-Verbindung fehlgeschlagen (%s)
 0xe18,Verbindung zu %s/%d zurueckgewiesen (falscher Quellport)
-# 0xe19 - unused
+0xe19,*** %s ist zurueckgekehrt.\n 
 0xe1a,Verbindung zu %s zurueckgewiesen (falscher hostname)
 0xe1b,Telnet-Verbindung: %s/%d
 0xe1c,Ident fehlgeschlagen fuer %s: %s

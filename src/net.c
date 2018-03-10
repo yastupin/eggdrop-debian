@@ -8,7 +8,7 @@
  *
  * Changes after Feb 23, 1999 Copyright Eggheads Development Team
  *
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,7 +69,7 @@ int pref_af = 0;              /* Prefer IPv6 over IPv4?                       */
 #endif
 char firewall[121] = "";      /* Socks server for firewall.                   */
 int firewallport = 1080;      /* Default port of socks 4/5 firewalls.         */
-char botuser[21] = "eggdrop"; /* Username of the user running the bot.        */
+char botuser[11] = "eggdrop"; /* Username of the user running the bot.        */
 int dcc_sanitycheck = 0;      /* Do some sanity checking on dcc connections.  */
 
 sock_list *socklist = NULL;   /* Enough to be safe.                           */
@@ -797,9 +797,15 @@ void safe_write(int fd, const void *buf, size_t count)
 {
   const char *bytes = buf;
   ssize_t ret;
+  static int inhere = 0;
+
   do {
     if ((ret = write(fd, bytes, count)) == -1 && errno != EINTR) {
-      putlog(LOG_MISC, "*", "Unexpected write() failure on attempt to write %zd bytes to fd %d: %s.", count, fd, strerror(errno));
+      if (!inhere) {
+        inhere = 1;
+        putlog(LOG_MISC, "*", "Unexpected write() failure on attempt to write %zd bytes to fd %d: %s.", count, fd, strerror(errno));
+        inhere = 0;
+      }
       break;
     }
   } while ((bytes += ret, count -= ret));
@@ -1045,6 +1051,12 @@ int sockgets(char *s, int *len)
     s[0] = 0;
     return ret;
   }
+  /* sockread can return binary data while socket still has connectflag, process first */
+  if (socklist[ret].flags & SOCK_BINARY && *len > 0) {
+    socklist[ret].flags &= ~SOCK_CONNECT;
+    egg_memcpy(s, xx, *len);
+    return socklist[ret].sock;
+  }
   /* Binary, listening and passed on sockets don't get buffered. */
   if (socklist[ret].flags & SOCK_CONNECT) {
     if (socklist[ret].flags & SOCK_STRONGCONN) {
@@ -1058,10 +1070,6 @@ int sockgets(char *s, int *len)
     }
     socklist[ret].flags &= ~SOCK_CONNECT;
     s[0] = 0;
-    return socklist[ret].sock;
-  }
-  if (socklist[ret].flags & SOCK_BINARY) {
-    egg_memcpy(s, xx, *len);
     return socklist[ret].sock;
   }
   if (socklist[ret].flags & (SOCK_LISTEN | SOCK_PASS | SOCK_TCL)) {
@@ -1181,6 +1189,8 @@ void tputs(register int z, char *s, unsigned int len)
           else if (!strncmp(dcc[idx].type->name, "FILES", 5))
             otraffic_filesys_today += len;
           else if (!strcmp(dcc[idx].type->name, "SEND"))
+            otraffic_trans_today += len;
+          else if (!strcmp(dcc[idx].type->name, "FORK_SEND"))
             otraffic_trans_today += len;
           else if (!strncmp(dcc[idx].type->name, "GET", 3))
             otraffic_trans_today += len;

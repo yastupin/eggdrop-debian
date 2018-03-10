@@ -1,7 +1,7 @@
 /*
  * tcltransfer.c -- part of transfer.mod
  *
- * Copyright (C) 2003 - 2017 Eggheads Development Team
+ * Copyright (C) 2003 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,24 +50,9 @@ static int tcl_dccsend STDVAR
     Tcl_AppendResult(irp, "4", NULL);
     return TCL_OK;
   }
-  if (copy_to_tmp) {
-    sys = nmalloc(strlen(tempdir) + strlen(nfn) + 1);
-    sprintf(sys, "%s%s", tempdir, nfn);
-    if (file_readable(sys)) {
-      Tcl_AppendResult(irp, "5", NULL);
-      return TCL_OK;
-    }
-    copyfile(argv[1], sys);
-  } else {
-    sys = nmalloc(strlen(argv[1]) + 1);
-    strcpy(sys, argv[1]);
-  }
-  i = raw_dcc_send(sys, argv[2], "*", argv[1]);
-  if (i > 0)
-    wipe_tmp_filename(sys, -1);
+  i = raw_dcc_send(argv[1], argv[2], "*");
   egg_snprintf(s, sizeof s, "%d", i);
   Tcl_AppendResult(irp, s, NULL);
-  nfree(sys);
   return TCL_OK;
 }
 

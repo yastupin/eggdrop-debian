@@ -4,7 +4,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@
 #include "chan.h"
 #include "tandem.h"
 #include "modules.h"
+#include "string.h"
 
 extern Tcl_Interp *interp;
 extern struct userrec *userlist;
@@ -33,7 +34,7 @@ extern int default_flags, dcc_total, ignore_time;
 extern struct dcc_t *dcc;
 extern char botnetnick[];
 extern time_t now;
-
+extern struct user_entry_type *entry_type_list;
 
 static int tcl_countusers STDVAR
 {
@@ -242,8 +243,8 @@ static int tcl_botattr STDVAR
 static int tcl_matchattr STDVAR
 {
   struct userrec *u;
-  struct flag_record plus, minus, user;
-  int ok = 0, f;
+  struct flag_record plus = {0}, minus = {0}, user = {0};
+  int ok = 0, nom = 0;
 
   BADARGS(3, 4, " handle flags ?channel?");
 
@@ -252,15 +253,19 @@ static int tcl_matchattr STDVAR
     get_user_flagrec(u, &user, argv[3]);
     plus.match = user.match;
     break_down_flags(argv[2], &plus, &minus);
-    f = (minus.global || minus.udef_global || minus.chan || minus.udef_chan ||
-         minus.bot);
+    minus.match = plus.match ^ (FR_AND | FR_OR);
+    if (!minus.global && !minus.udef_global && !minus.chan &&
+        !minus.udef_chan && !minus.bot) {
+      nom = 1;
+      if (!plus.global && !plus.udef_global && !plus.chan &&
+          !plus.udef_chan && !plus.bot) {
+        Tcl_AppendResult(irp, "Unknown flag specified for matching", NULL);
+        return TCL_ERROR;
+      }
+    }
     if (flagrec_eq(&plus, &user)) {
-      if (!f)
+      if (nom || !flagrec_eq(&minus, &user)) {
         ok = 1;
-      else {
-        minus.match = plus.match ^ (FR_AND | FR_OR);
-        if (!flagrec_eq(&minus, &user))
-          ok = 1;
       }
     }
   }
@@ -293,49 +298,144 @@ static int tcl_adduser STDVAR
 static int tcl_addbot STDVAR
 {
   struct bot_addr *bi;
-  char *p, *q;
+  /* Max addr len is 60 ? (see cmd_pls_bot in cmds.c) + brackets + delims + ports + 0 */
+  char *p, *q, addr[75], hand[HANDLEN + 1];
+  int i, colon=0, braced = 0, ipv6 = 0, count = 0;
 
-  BADARGS(3, 3, " handle address");
 
-  if (strlen(argv[1]) > HANDLEN)
-    argv[1][HANDLEN] = 0;
-  for (p = argv[1]; *p; p++)
+  BADARGS(3, 5, " handle address ?telnet-port ?relay-port??");
+
+  /* Copy to adjustable char*'s */
+  strncpyz(hand, argv[1], sizeof hand);
+  strncpyz(addr, argv[2], sizeof addr);
+
+  for (p = hand; *p; p++)
     if ((unsigned char) *p <= 32 || *p == '@')
       *p = '?';
 
   if ((argv[1][0] == '*') || strchr(BADHANDCHARS, argv[1][0]) ||
-      get_user_by_handle(userlist, argv[1]))
+      get_user_by_handle(userlist, hand))
     Tcl_AppendResult(irp, "0", NULL);
   else {
-    userlist = adduser(userlist, argv[1], "none", "-", USER_BOT);
-    bi = user_malloc(sizeof(struct bot_addr));
-#ifdef IPV6
-    if ((q = strchr(argv[2], '/'))) {
+    for (i=0; addr[i]; i++) {
+      if (addr[i] == ':') {
+        count++;
+        colon=i;
+      }
+      if (addr[i] == ']') {
+        braced = i;
+      }
+    }
+    if (count > 1) {
+      ipv6 = 1;
+    }
+    if ((!ipv6 && braced)
+#ifndef IPV6
+        || (ipv6)
+#endif
+      ) {
+      Tcl_AppendResult(irp, "0", NULL);
+      return TCL_OK;
+    }
+    /* Check that the char following the / is not null */
+    if ((q = strrchr(addr, '/'))) {
       if (!q[1]) {
         *q = 0;
-        q = 0;
+        q = NULL;
       }
-    } else
+    }
+
+    /* Find ports, still allowing them in address for backward compat */
+    if (!ipv6) {
+      q = strchr(addr, ':');
+    } else if (braced && (colon > braced)) {
+      q = strrchr(addr, ':');
+    } else {
+      /* IPv6 address with no braces or braces without port(s) after */
+      q = NULL;
+    }
+
+    if (q) {
+      /* Split and count, ignore any following args */
+      *q++ = 0;
+      p = strchr(q, '/');
+      if (p)
+        *p++ = 0;
+    } else {
+      /* No port in address field, check next args */
+      p = NULL;
+      if (argc == 4 || argc == 5) {
+        q = argv[3];
+      }
+      if (argc == 5) {
+        p = argv[4];
+      }
+    }
+
+    /* Verify ports */
+#ifndef TLS
+    /* Check TLS */
+    if ((q && *q == '+') || (p && *p == '+')) {
+      Tcl_AppendResult(irp, "0", NULL);
+      return TCL_OK;
+    }
+
 #endif
-    q = strchr(argv[2], ':');
+    /* Verify */
+    /* check_int_range returns 0 if q or p is NULL */
+    if (q && !check_int_range(q, 0, 65536)) {
+      Tcl_AppendResult(irp, "0", NULL);
+      return TCL_OK;
+    }
+    if (p && !check_int_range(p, 0, 65536)) {
+      Tcl_AppendResult(irp, "0", NULL);
+      return TCL_OK;
+    }
+
+    userlist = adduser(userlist, hand, "none", "-", USER_BOT);
+    bi = user_malloc(sizeof(struct bot_addr));
+#ifdef TLS
+    bi->ssl = 0;
+#endif
+
+    if ((count = strlen(addr)) > 60) {
+      count = 60;
+      addr[count] = 0;
+    }
+    /* Trim IPv6 []s out if present */
+    if (braced) {
+      --count;
+      addr[count] = 0;
+      memmove(addr, addr + 1, count);
+    }
+
     if (!q) {
-      bi->address = user_malloc(strlen(argv[2]) + 1);
-      strcpy(bi->address, argv[2]);
+      bi->address = user_malloc(count + 1);
+      strcpy(bi->address, addr);
       bi->telnet_port = 3333;
       bi->relay_port = 3333;
     } else {
-      bi->address = user_malloc(q - argv[2] + 1);
-      strncpy(bi->address, argv[2], q - argv[2]);
-      bi->address[q - argv[2]] = 0;
-      p = q + 1;
-      bi->telnet_port = atoi(p);
-      q = strchr(p, '/');
-      if (!q)
+      bi->address = user_malloc(count + 1);
+      strcpy(bi->address, addr);
+      bi->telnet_port = atoi(q);
+#ifdef TLS
+      if (*q == '+')
+        bi->ssl = TLS_BOT;
+#endif
+      if (!p) {
         bi->relay_port = bi->telnet_port;
-      else
-        bi->relay_port = atoi(q + 1);
+#ifdef TLS
+        bi->ssl *= TLS_BOT + TLS_RELAY;
+#endif
+      } else {
+        bi->relay_port = atoi(p);
+#ifdef TLS
+        if (*p == '+')
+          bi->ssl |= TLS_RELAY;
+#endif
+      }
     }
-    set_user(&USERENTRY_BOTADDR, get_user_by_handle(userlist, argv[1]), bi);
+    set_user(&USERENTRY_BOTADDR, get_user_by_handle(userlist, hand), bi);
     Tcl_AppendResult(irp, "1", NULL);
   }
   return TCL_OK;
@@ -532,16 +632,12 @@ static int tcl_ignorelist STDVAR
 
 static int tcl_getuser STDVAR
 {
-  struct user_entry_type *et;
+  struct user_entry_type *et = NULL;
   struct userrec *u;
   struct user_entry *e;
 
-  BADARGS(3, -1, " handle type");
+  BADARGS(2, -1, " handle ?type?");
 
-  if (!(et = find_entry_type(argv[2])) && egg_strcasecmp(argv[2], "HANDLE")) {
-    Tcl_AppendResult(irp, "No such info type: ", argv[2], NULL);
-    return TCL_ERROR;
-  }
   if (!(u = get_user_by_handle(userlist, argv[1]))) {
     if (argv[1][0] != '*') {
       Tcl_AppendResult(irp, "No such user.", NULL);
@@ -549,12 +645,37 @@ static int tcl_getuser STDVAR
     } else
       return TCL_OK; /* silently ignore user */
   }
-  if (!egg_strcasecmp(argv[2], "HANDLE"))
-    Tcl_AppendResult(irp, u->handle, NULL);
-  else {
-    e = find_user_entry(et, u);
-    if (e)
-      return et->tcl_get(irp, u, e, argc, argv);
+  if (argc >= 3) {
+    if (!(et = find_entry_type(argv[2])) &&
+        egg_strcasecmp(argv[2], "HANDLE")) {
+      Tcl_AppendResult(irp, "No such info type: ", argv[2], NULL);
+      return TCL_ERROR;
+    }
+    if (!egg_strcasecmp(argv[2], "HANDLE"))
+      Tcl_AppendResult(irp, u->handle, NULL);
+    else {
+      e = find_user_entry(et, u);
+      if (e)
+        return et->tcl_get(irp, u, e, argc, argv);
+    }
+  } else {
+    for (et = entry_type_list; et; et = et->next) {
+      if (!et->tcl_append)
+        continue;
+      e = find_user_entry(et, u);
+      if (e && e->name) {
+        Tcl_AppendElement(irp, e->name);
+      } else if (et->name) {
+        Tcl_AppendElement(irp, et->name);
+      } else {
+        continue;
+      }
+      if (e) {
+        et->tcl_append(irp, u, e);
+      } else {
+        Tcl_AppendElement(irp, "");
+      }
+    }
   }
   return TCL_OK;
 }

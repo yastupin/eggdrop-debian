@@ -7,7 +7,7 @@
 /*
  * Written by Rumen Stoyanov <pseudo@egg6.net>
  *
- * Copyright (C) 2010 - 2017 Eggheads Development Team
+ * Copyright (C) 2010 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ extern int tls_vfydcc;
 extern struct dcc_t *dcc;
 
 int tls_maxdepth = 9;         /* Max certificate chain verification depth     */
-int ssl_files_loaded = 1;     /* Check for loaded SSL key/cert files          */
+int ssl_files_loaded = 0;     /* Check for loaded SSL key/cert files          */
 SSL_CTX *ssl_ctx = NULL;      /* SSL context object                           */
 char *tls_randfile = NULL;    /* Random seed file for SSL                     */
 char tls_capath[121] = "";    /* Path to trusted CA certificates              */
@@ -137,47 +137,46 @@ int ssl_init()
     ERR_free_strings();
     return -1;
   }
-  if (!tls_certfile[0]) {
-    ssl_files_loaded = 0;
-    if (tls_keyfile[0])
-      putlog(LOG_MISC, "*", "ERROR: TLS: ssl-privatekey not set, ignoring ssl-certificate.");
-  } else if (!tls_keyfile[0]) {
-    ssl_files_loaded = 0;
-    putlog(LOG_MISC, "*", "ERROR: TLS: ssl-certificate not set, ignoring ssl-privatekey.");
-  } else {
-    ssl_files_loaded = 1;
+  ssl_files_loaded = 0;
+  if ((tls_certfile[0] == '\0') != (tls_keyfile[0] == '\0')) {
+    /* Both need to be set or unset */
+    putlog(LOG_MISC, "*", "ERROR: TLS: %s set but %s unset. Both must be set "
+        "to use a certificate, or unset both to disable.",
+        tls_certfile[0] ? "ssl-certificate" : "ssl-privatekey",
+        tls_certfile[0] ? "ssl-privatekey" : "ssl-certificate");
+    fatal("ssl-privatekey and ssl-certificate must both be set or unset.", 0);
+  }
+  if (tls_certfile[0] && tls_keyfile[0]) {
     /* Load our own certificate and private key. Mandatory for acting as
     server, because we don't support anonymous ciphers by default. */
     if (SSL_CTX_use_certificate_chain_file(ssl_ctx, tls_certfile) != 1) {
-      putlog(LOG_MISC, "*", "ERROR: TLS: unable to load own certificate: %s",
-             ERR_error_string(ERR_get_error(), NULL));
-      putlog(LOG_MISC, "*", "  Check ssl-certificate in config.");
-      ssl_files_loaded = 0;
+      putlog(LOG_MISC, "*", "ERROR: TLS: unable to load own certificate from %s: %s",
+          tls_certfile, ERR_error_string(ERR_get_error(), NULL));
+      fatal("Unable to load TLS certificate (ssl-certificate config setting)!", 0);
     }
-    if (SSL_CTX_use_PrivateKey_file(ssl_ctx, tls_keyfile,
-        SSL_FILETYPE_PEM) != 1) {
-      putlog(LOG_MISC, "*", "ERROR: TLS: unable to load private key: %s",
-             ERR_error_string(ERR_get_error(), NULL));
-      putlog(LOG_MISC, "*", "  Check ssl-privatekey in config.");
-      ssl_files_loaded = 0;
+    if (SSL_CTX_use_PrivateKey_file(ssl_ctx, tls_keyfile, SSL_FILETYPE_PEM) != 1) {
+      putlog(LOG_MISC, "*", "ERROR: TLS: unable to load private key from %s: %s",
+          tls_keyfile, ERR_error_string(ERR_get_error(), NULL));
+      fatal("Unable to load TLS private key (ssl-privatekey config setting)!", 0);
     }
+    ssl_files_loaded = 1;
   }
   if ((tls_capath[0] || tls_cafile[0]) &&
       !SSL_CTX_load_verify_locations(ssl_ctx, tls_cafile[0] ? tls_cafile : NULL,
-      tls_capath[0] ? tls_capath : NULL))
+      tls_capath[0] ? tls_capath : NULL)) {
     putlog(LOG_MISC, "*", "ERROR: TLS: unable to set CA certificates location: %s",
            ERR_error_string(ERR_get_error(), NULL));
+    ERR_free_strings();
+  }
   /* Let advanced users specify the list of allowed ssl ciphers */
-  if (tls_ciphers[0])
-    if (!SSL_CTX_set_cipher_list(ssl_ctx, tls_ciphers)) {
-      /* this replaces any preset ciphers so an invalid list is fatal */
-      putlog(LOG_MISC, "*", "ERROR: TLS: no valid ciphers found. Disabling SSL.");
-      ERR_free_strings();
-      SSL_CTX_free(ssl_ctx);
-      ssl_ctx = NULL;
-      return -3;
-    }
-
+  if (tls_ciphers[0] && !SSL_CTX_set_cipher_list(ssl_ctx, tls_ciphers)) {
+    /* this replaces any preset ciphers so an invalid list is fatal */
+    putlog(LOG_MISC, "*", "ERROR: TLS: no valid ciphers found. Disabling SSL.");
+    ERR_free_strings();
+    SSL_CTX_free(ssl_ctx);
+    ssl_ctx = NULL;
+    return -3;
+  }
   return 0;
 }
 
@@ -211,7 +210,7 @@ char *ssl_fpconv(char *in, char *out)
       OPENSSL_free(fp);
       return out;
     }
-      OPENSSL_free(md5);
+    OPENSSL_free(md5);
   }
   return NULL;
 }
@@ -263,7 +262,7 @@ char *ssl_getfp(int sock)
  *
  * Return value: Pointer to the uid string or NULL if not found
  */
-char *ssl_getuid(int sock)
+const char *ssl_getuid(int sock)
 {
   int idx;
   X509 *cert;
@@ -282,7 +281,7 @@ char *ssl_getuid(int sock)
     return NULL;
   name = X509_NAME_ENTRY_get_data(X509_NAME_get_entry(subj, idx));
   /* Extract the contents, assuming null-terminated ASCII string */
-  return (char *) ASN1_STRING_data(name);
+  return (const char *) egg_ASN1_string_data(name);
 }
 
 /* Compare the peer's host with their Common Name or dnsName found in
@@ -292,13 +291,13 @@ char *ssl_getuid(int sock)
  *
  * Return value: 1 if cn matches host, 0 otherwise.
  */
-static int ssl_hostmatch(char *cn, char *host)
+static int ssl_hostmatch(const char *cn, const char *host)
 {
-  char *p, *q, *r;
+  const char *p, *q, *r;
 
   if ((r = strchr(cn + 1, '.')) && r[-1] == '*' && strchr(r, '.')) {
     for (p = cn, q = host; *p != '*'; p++, q++)
-      if (toupper((unsigned char)*p) != toupper((unsigned char)*q))
+      if (toupper((const unsigned char)*p) != toupper((const unsigned char)*q))
         return 0;
 
     if (!(p = strchr(host, '.')) || strcasecmp(p, r))
@@ -336,7 +335,7 @@ static int ssl_hostmatch(char *cn, char *host)
  */
 static int ssl_verifycn(X509 *cert, ssl_appdata *data)
 {
-  char *cn;
+  const char *cn;
   int crit = 0, match = 0;
   ASN1_OCTET_STRING *ip;
   GENERAL_NAMES *altname; /* SubjectAltName ::= GeneralNames */
@@ -356,7 +355,7 @@ static int ssl_verifycn(X509 *cert, ssl_appdata *data)
           match = !ASN1_STRING_cmp(gn->d.ip, ip);
       } else if (gn->type == GEN_DNS) {
         /* IA5string holds ASCII data */
-        cn = (char *) ASN1_STRING_data(gn->d.ia5);
+        cn = (const char *) egg_ASN1_string_data(gn->d.ia5);
         match = ssl_hostmatch(cn, data->host);
       }
     }
@@ -393,7 +392,7 @@ static int ssl_verifycn(X509 *cert, ssl_appdata *data)
          name until we find a match. */
       while (!match && pos != -1) {
         name = X509_NAME_ENTRY_get_data(X509_NAME_get_entry(subj, pos));
-        cn = (char *) ASN1_STRING_data(name);
+        cn = (const char *) egg_ASN1_string_data(name);
         if (ip)
           match = a2i_IPADDRESS(cn) ? (ASN1_STRING_cmp(ip, a2i_IPADDRESS(cn)) ? 0 : 1) : 0;
         else
@@ -605,11 +604,12 @@ void ssl_info(SSL *ssl, int where, int ret)
   const SSL_CIPHER *cipher;
   int secret, processed;
 
+  if (!(data = (ssl_appdata *) SSL_get_app_data(ssl)))
+    return;
+
   /* We're doing non-blocking IO, so we check here if the handshake has
      finished */
   if (where & SSL_CB_HANDSHAKE_DONE) {
-    if (!(data = (ssl_appdata *) SSL_get_app_data(ssl)))
-      return;
     /* Callback for completed handshake. Cheaper and more convenient than
        using H_tls */
     sock = SSL_get_fd(ssl);
@@ -640,10 +640,39 @@ void ssl_info(SSL *ssl, int where, int ret)
     /* More verbose information, for debugging only */
     SSL_CIPHER_description(cipher, buf, sizeof buf);
     debug1("TLS: cipher details: %s", buf);
+  } else if (where & SSL_CB_ALERT) {
+    if (strcmp(SSL_alert_type_string(ret), "W") ||
+        strcmp(SSL_alert_desc_string(ret), "CN")) {
+      putlog(data->loglevel, "*", "TLS: alert during %s: %s (%s).",
+             (where & SSL_CB_READ) ? "read" : "write",
+             SSL_alert_type_string_long(ret),
+             SSL_alert_desc_string_long(ret));
+    } else {
+      /* Ignore close notify warnings */
+      debug1("Received close notify warning during %s",
+             (where & SSL_CB_READ) ? "read" : "write");
+    }
+  } else if (where & SSL_CB_EXIT) {
+    /* SSL_CB_EXIT may point to soft error for non-blocking! */
+    if (ret == 0) {
+      /* According to manpage, only 0 indicates a real error */
+      putlog(data->loglevel, "*", "TLS: failed in: %s.",
+             SSL_state_string_long(ssl));
+    } else if (ret < 0) {
+      int err = SSL_get_error(ssl, ret);
+      /* However we still check <0 as man example does so too */
+      if (err & (SSL_ERROR_WANT_READ | SSL_ERROR_WANT_WRITE)) {
+        /* Errors to be ignored for non-blocking */
+        debug1("TLS: awaiting more %s", (err & SSL_ERROR_WANT_READ) ? "reads" : "writes");
+      } else {
+        putlog(data->loglevel, "*", "TLS: failed in: %s.",
+               SSL_state_string_long(ssl));
+      }
+    }
+  } else {
+    /* Display the state of the engine for debugging purposes */
+    debug1("TLS: state change: %s", SSL_state_string_long(ssl));
   }
-
-  /* Display the state of the engine for debugging purposes */
-  debug1("TLS: state change: %s", SSL_state_string_long(ssl));
 }
 
 /* Switch a socket to SSL communication
@@ -674,6 +703,10 @@ int ssl_handshake(int sock, int flags, int verify, int loglevel, char *host,
   if (!ssl_ctx && ssl_init()) {
     debug0("TLS: Failed. OpenSSL not initialized properly.");
     return -1;
+  }
+  if ((flags & TLS_LISTEN) && !ssl_files_loaded) {
+    putlog(LOG_MISC, "*", "TLS: Failed. Certificate/Key not loaded, cannot support SSL/TLS for client (see doc/TLS).");
+    return -4;
   }
   /* find the socket in the list */
   i = findsock(sock);

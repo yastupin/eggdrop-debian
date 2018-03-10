@@ -3,7 +3,7 @@
  *   prototypes for misc_file.c
  */
 /*
- * Copyright (C) 2000 - 2017 Eggheads Development Team
+ * Copyright (C) 2000 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,8 @@
 #define _EGG_MISC_FILE_H
 
 int copyfile(char *, char *);
+int copyfilef(char *, FILE *);
+int fcopyfile(FILE *, char *);
 int movefile(char *, char *);
 int file_readable(char *);
 

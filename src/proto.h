@@ -9,7 +9,7 @@
  */
 /*
  * Copyright (C) 1997 Robey Pointer
- * Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -103,6 +103,7 @@ int isowner(char *);
 char *masktype(int);
 char *maskname(int);
 void reaffirm_owners();
+void add_hq_user();
 void rehash();
 void reload();
 void chanprog();
@@ -118,6 +119,7 @@ float getcputime();
 /* cmds.c */
 int check_dcc_attrs(struct userrec *, int);
 int check_dcc_chanattrs(struct userrec *, char *, int, int);
+int check_int_range(char *value, int min, int max);
 int stripmodes(char *);
 char *stripmasktype(int);
 
@@ -135,6 +137,7 @@ int increase_socks_max();
 int findidx(int);
 int findanyidx(int);
 char *add_cr(char *);
+void dprint(int, char *, int);
 void dprintf EGG_VARARGS(int, arg1);
 void chatout EGG_VARARGS(char *, arg1);
 extern void (*shareout) ();
@@ -306,7 +309,7 @@ int readtclprog(char *fname);
 #ifdef TLS
 int ssl_handshake(int, int, int, int, char *, IntFunc);
 char *ssl_fpconv(char *in, char *out);
-char *ssl_getuid(int sock);
+const char *ssl_getuid(int sock);
 char *ssl_getfp(int sock);
 #endif
 

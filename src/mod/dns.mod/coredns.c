@@ -7,7 +7,7 @@
  * IPv6 support added by pseudo <pseudo@egg6.net>
  */
 /*
- * Portions Copyright (C) 1999 - 2017 Eggheads Development Team
+ * Portions Copyright (C) 1999 - 2018 Eggheads Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -914,12 +914,13 @@ void parserespacket(u_8bit_t *response, int len)
         ddebug0(RES_WRN "Ignoring response with unexpected query type \"A\".");
         return;
       }
-      rp->sockname.family = AF_INET;
 #ifndef IPV6
+      rp->sockname.family = AF_INET;
       break;
 #else
       if (rp->sockname.family == AF_INET6)
         ready = 1;
+      rp->sockname.family = AF_INET;
       break;
     case T_AAAA:
       if (!IS_A(rp)) {
@@ -1273,8 +1274,6 @@ static int init_dns_core(void)
 
   /* Initialise the resolv library. */
   res_init();
-  if (!_res.nscount)
-    putlog(LOG_MISC, "*", "No nameservers found.");
   _res.options |= RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
   for (i = 0; i < _res.nscount; i++)
     _res.nsaddr_list[i].sin_family = AF_INET;
