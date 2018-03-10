@@ -1,12 +1,13 @@
-eggdrop (1.8.1-1) UNRELEASED; urgency=medium
+eggdrop (1.8.3-1) UNRELEASED; urgency=low
 
-  * New upstream version 1.8.1
+  * New upstream version 1.8.3
   * remove 03openssl_checks (fixed upstream)
+  * refresh patches
   * ignore rc release in debian/watch
-  * update NEWS filename to 1.8.1
-  * add Vcs-Git/Browser to control
+  * rename NEWS and UPGRADING files
+  * add Vcs-Git and Vcs-Browser to control
 
- -- Cédric Barboiron <ced@winkie.fr>  Tue, 20 Jun 2017 17:02:20 +0200
+ -- Cédric Barboiron <ced@winkie.fr>  Sat, 10 Mar 2018 16:37:39 +0100
 
 eggdrop (1.8.0-1) UNRELEASED; urgency=low
 

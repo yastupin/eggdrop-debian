@@ -71,7 +71,7 @@
  # ^- This should contain a fully qualified path to your Eggdrop executable.
  #
  # This is a sample Eggdrop configuration file which includes all possible
-@@ -236,22 +236,22 @@
+@@ -241,19 +241,19 @@
  
  # Specify here where Eggdrop should look for help files. Don't modify this
  # setting unless you know what you're doing!
@@ -82,9 +82,6 @@
  # certain Tcl and DCC commands.
 -set text-path "text/"
 +set text-path "/usr/share/eggdrop/text/"
- 
- # Set here a place to store temporary files.
- set temp-path "/tmp"
  
  # The MOTD (Message Of The day) is displayed when people dcc chat or telnet
  # to the bot. Look at doc/TEXT-SUBSTITUTIONS for options.
@@ -98,7 +95,7 @@
  
  # This specifies what permissions the user, channel, and notes files should
  # be set to. The octal values are the same as for the chmod system command.
-@@ -589,7 +589,7 @@
+@@ -591,7 +591,7 @@
  # If you run the bot from the compilation directory, you will want to set
  # this to "". If you use 'make install' (like all good kiddies do ;), this
  # is a fine default. Otherwise, use your head :)
@@ -107,7 +104,7 @@
  
  
  #### BLOWFISH MODULE ####
-@@ -1511,22 +1511,22 @@
+@@ -1522,22 +1522,22 @@
  #
  # source scripts/script.tcl
  
@@ -135,7 +132,7 @@
  
  # A few IRC networks (EFnet and Undernet) have added some simple checks to
  # prevent drones from connecting to the IRC network. While these checks are
-@@ -1538,11 +1538,11 @@
+@@ -1549,11 +1549,11 @@
    switch -- ${net-type} {
      "0" {
        # EFnet
