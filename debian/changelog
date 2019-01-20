@@ -1,6 +1,6 @@
-eggdrop (1.8.3-2) UNRELEASED; urgency=low
+eggdrop (1.8.4-1) UNRELEASED; urgency=low
 
-  * New upstream version 1.8.3
+  * New upstream version 1.8.4
   * patches
     - remove 03openssl_checks (fixed upstream)
     - refresh patches
@@ -14,7 +14,7 @@ eggdrop (1.8.3-2) UNRELEASED; urgency=low
   * rename NEWS and UPGRADING files
   * add Vcs-Git and Vcs-Browser to control
 
- -- Cédric Barboiron <ced@winkie.fr>  Sat, 10 Mar 2018 16:37:39 +0100
+ -- Cédric Barboiron <ced@winkie.fr>  Sun, 20 Jan 2019 17:39:35 +0100
 
 eggdrop (1.8.0-1) UNRELEASED; urgency=low
 
