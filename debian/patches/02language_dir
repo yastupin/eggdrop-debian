@@ -1,7 +1,17 @@
+From: =?utf-8?q?C=C3=A9dric_Barboiron?= <ced@winkie.fr>
+Date: Sun, 20 Jan 2019 17:32:46 +0100
+Subject: language_dir
+
 fix language files path
+---
+ src/eggdrop.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/eggdrop.h b/src/eggdrop.h
+index 8a05e73..3b886b6 100644
 --- a/src/eggdrop.h
 +++ b/src/eggdrop.h
-@@ -62,7 +62,7 @@
+@@ -63,7 +63,7 @@
  
  
  /* Language stuff */

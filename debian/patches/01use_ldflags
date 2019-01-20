@@ -1,7 +1,18 @@
-Use $LDFLAGS when linking eggdrop or mods
+From: =?utf-8?q?C=C3=A9dric_Barboiron?= <ced@winkie.fr>
+Date: Sun, 20 Jan 2019 17:32:46 +0100
+Subject: use_ldflags
+
+---
+ aclocal.m4          | 4 ++--
+ src/Makefile.in     | 2 +-
+ src/mod/Makefile.in | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/aclocal.m4 b/aclocal.m4
+index ae49b08..2f26ade 100644
 --- a/aclocal.m4
 +++ b/aclocal.m4
-@@ -758,7 +758,7 @@
+@@ -702,7 +702,7 @@ AC_DEFUN([EGG_CHECK_OS],
        LINUX="yes"
        MOD_LD="$CC"
        SHLIB_CC="$CC -fPIC"
@@ -10,29 +21,33 @@ Use $LDFLAGS when linking eggdrop or mods
      ;;
      Lynx)
        # do nothing
-@@ -808,7 +808,7 @@
-     *BSD)
-       # FreeBSD/OpenBSD/NetBSD
+@@ -751,7 +751,7 @@ AC_DEFUN([EGG_CHECK_OS],
+     ;;
+     FreeBSD|OpenBSD|NetBSD)
        SHLIB_CC="$CC -fPIC"
 -      SHLIB_LD="$CC -shared"
 +      SHLIB_LD="$CC -shared $LDFLAGS"
-     ;;
-     Darwin)
-       # Mac OS X
+       case "$egg_cv_var_system_type" in
+         *NetBSD)
+           AC_DEFINE(NETBSD_HACKS, 1, [Define if running under NetBSD.])
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 54eba5d..ad1f0e4 100644
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
-@@ -41,7 +41,7 @@
+@@ -41,7 +41,7 @@ linkstart:
  	touch mod/mod.xlibs
  
  link:
--	$(LD) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
-+	$(LD) $(LDFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
+-	$(LD) $(CFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
++	$(LD) $(LDFLAGS) $(CFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
  
  linkfinish:
  	@$(STRIP) ../$(EGGEXEC) && \
+diff --git a/src/mod/Makefile.in b/src/mod/Makefile.in
+index ca742f6..6eb0c23 100644
 --- a/src/mod/Makefile.in
 +++ b/src/mod/Makefile.in
-@@ -33,7 +33,7 @@
+@@ -33,7 +33,7 @@ modconfig = $(top_srcdir)/misc/modconfig --bindir=../.. \
    --top_srcdir=$(top_srcdir)
  egg_ac_parameters = @egg_ac_parameters@
  
