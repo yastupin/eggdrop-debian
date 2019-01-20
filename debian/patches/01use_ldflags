@@ -1,7 +1,6 @@
-Use $LDFLAGS when linking eggdrop or mods
 --- a/aclocal.m4
 +++ b/aclocal.m4
-@@ -758,7 +758,7 @@
+@@ -702,7 +702,7 @@
        LINUX="yes"
        MOD_LD="$CC"
        SHLIB_CC="$CC -fPIC"
@@ -10,23 +9,23 @@ Use $LDFLAGS when linking eggdrop or mods
      ;;
      Lynx)
        # do nothing
-@@ -808,7 +808,7 @@
-     *BSD)
-       # FreeBSD/OpenBSD/NetBSD
+@@ -751,7 +751,7 @@
+     ;;
+     FreeBSD|OpenBSD|NetBSD)
        SHLIB_CC="$CC -fPIC"
 -      SHLIB_LD="$CC -shared"
 +      SHLIB_LD="$CC -shared $LDFLAGS"
-     ;;
-     Darwin)
-       # Mac OS X
+       case "$egg_cv_var_system_type" in
+         *NetBSD)
+           AC_DEFINE(NETBSD_HACKS, 1, [Define if running under NetBSD.])
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
 @@ -41,7 +41,7 @@
  	touch mod/mod.xlibs
  
  link:
--	$(LD) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
-+	$(LD) $(LDFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
+-	$(LD) $(CFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
++	$(LD) $(LDFLAGS) $(CFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
  
  linkfinish:
  	@$(STRIP) ../$(EGGEXEC) && \

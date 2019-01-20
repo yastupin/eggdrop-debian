@@ -7,7 +7,7 @@ fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
  # ^- This should contain a fully qualified path to your Eggdrop executable.
  
  ## This is the basic version of Eggdrop's config file and contains only the
-@@ -198,7 +198,7 @@
+@@ -199,7 +199,7 @@
  
  # Specify here where Eggdrop should look for help files. Don't modify this
  # setting unless you know what you're doing!
@@ -16,7 +16,7 @@ fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
  
  ##### BOTNET/DCC/TELNET #####
  
-@@ -302,7 +302,7 @@
+@@ -303,7 +303,7 @@
  ## If you run the bot from the compilation directory, you will want to set
  ## this to "". If you use 'make install' (like all good kiddies do ;), this
  ## is a fine default. Otherwise, use your head :)
@@ -25,7 +25,7 @@ fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
  
  #### DNS MODULE ####
  
-@@ -381,19 +381,19 @@
+@@ -382,19 +382,19 @@
  ## source scripts/script.tcl
  ## The 3 scripts below are default and shouldn't be removed.
  
@@ -50,7 +50,7 @@ fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
  
  ## This next line checks if eggdrop is being executed from the source directory, do not remove it
  if {[file exists aclocal.m4]} { die {You are attempting to run Eggdrop from the source directory. Please finish installing Eggdrop by running "make install" and run it from the install location.} }
-@@ -408,11 +408,11 @@
+@@ -409,11 +409,11 @@
    switch -- ${net-type} {
      "0" {
        # EFnet
@@ -72,7 +72,7 @@ fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
  # ^- This should contain a fully qualified path to your Eggdrop executable.
  #
  # This is a sample Eggdrop configuration file which includes all possible
-@@ -241,19 +241,19 @@
+@@ -242,19 +242,19 @@
  
  # Specify here where Eggdrop should look for help files. Don't modify this
  # setting unless you know what you're doing!
@@ -96,7 +96,7 @@ fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
  
  # This specifies what permissions the user, channel, and notes files should
  # be set to. The octal values are the same as for the chmod system command.
-@@ -591,7 +591,7 @@
+@@ -604,7 +604,7 @@
  # If you run the bot from the compilation directory, you will want to set
  # this to "". If you use 'make install' (like all good kiddies do ;), this
  # is a fine default. Otherwise, use your head :)
@@ -105,7 +105,7 @@ fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
  
  
  #### BLOWFISH MODULE ####
-@@ -1522,22 +1522,22 @@
+@@ -1535,22 +1535,22 @@
  #
  # source scripts/script.tcl
  
@@ -133,7 +133,7 @@ fix paths in eggdrop.conf and eggdrop-basic.conf example configurations files
  
  # A few IRC networks (EFnet and Undernet) have added some simple checks to
  # prevent drones from connecting to the IRC network. While these checks are
-@@ -1549,11 +1549,11 @@
+@@ -1562,11 +1562,11 @@
    switch -- ${net-type} {
      "0" {
        # EFnet
