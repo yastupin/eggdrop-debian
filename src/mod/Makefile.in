@@ -33,7 +33,7 @@ modconfig = $(top_srcdir)/misc/modconfig --bindir=../.. \
   --top_srcdir=$(top_srcdir)
 egg_ac_parameters = @egg_ac_parameters@
 
-MAKE_MOD = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'LD=$(LD)' \
+MAKE_MOD = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'LD=$(LD) $(LDFLAGS)' \
 'STRIP=$(STRIP)' 'CFLAGS=$(MOD_CFLAGS)' 'CPPFLAGS=$(MOD_CPPFLAGS)' \
 'XLIBS=$(XLIBS)' 'MOD_EXT=$(MOD_EXT)' 'SHELL=$(SHELL)' \
 'MODULE_XLIBS=$(MODULE_XLIBS)'

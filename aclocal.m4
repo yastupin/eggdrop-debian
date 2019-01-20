@@ -702,7 +702,7 @@ AC_DEFUN([EGG_CHECK_OS],
       LINUX="yes"
       MOD_LD="$CC"
       SHLIB_CC="$CC -fPIC"
-      SHLIB_LD="$CC -shared -nostartfiles"
+      SHLIB_LD="$CC -shared -nostartfiles $LDFLAGS"
     ;;
     Lynx)
       # do nothing
@@ -751,7 +751,7 @@ AC_DEFUN([EGG_CHECK_OS],
     ;;
     FreeBSD|OpenBSD|NetBSD)
       SHLIB_CC="$CC -fPIC"
-      SHLIB_LD="$CC -shared"
+      SHLIB_LD="$CC -shared $LDFLAGS"
       case "$egg_cv_var_system_type" in
         *NetBSD)
           AC_DEFINE(NETBSD_HACKS, 1, [Define if running under NetBSD.])

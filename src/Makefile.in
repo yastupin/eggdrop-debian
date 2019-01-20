@@ -41,7 +41,7 @@ linkstart:
 	touch mod/mod.xlibs
 
 link:
-	$(LD) $(CFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
+	$(LD) $(LDFLAGS) $(CFLAGS) -o ../$(EGGEXEC) $(eggdrop_objs) $(MODOBJS) $(XLIBS) md5/md5c.o compat/*.o `cat mod/mod.xlibs`
 
 linkfinish:
 	@$(STRIP) ../$(EGGEXEC) && \
