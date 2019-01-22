@@ -1,20 +1,22 @@
-eggdrop (1.8.4-1) UNRELEASED; urgency=low
+eggdrop (1.8.4-2) UNRELEASED; urgency=low
 
   * New upstream version 1.8.4
   * patches
     - remove 03openssl_checks (fixed upstream)
     - refresh patches
   * fix some lintian warnings
-    - use debhelper 10
-    - enable hardening flags
+    - use debhelper 12
+    - enable hardening flags (+all)
     - remove autotools-dev and dh-autoreconf dependencies
+    - update to standards version 4.3.0
   * debian/watch
     - use https
     - ignore rc releases in debian/watch
   * rename NEWS and UPGRADING files
   * add Vcs-Git and Vcs-Browser to control
+  * use dh_autoreconf
 
- -- Cédric Barboiron <ced@winkie.fr>  Sun, 20 Jan 2019 17:39:35 +0100
+ -- Cédric Barboiron <ced@winkie.fr>  Tue, 22 Jan 2019 18:33:29 +0100
 
 eggdrop (1.8.0-1) UNRELEASED; urgency=low
 
