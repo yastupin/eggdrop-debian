@@ -1,1 +1,2 @@
-eggdrop-data: embedded-javascript-library usr/share/doc/eggdrop-data/doc/html/_static/*
+eggdrop-data: embedded-javascript-library usr/share/doc/eggdrop-data/html/_static/*
+eggdrop-data: wrong-name-for-upstream-changelog usr/share/doc/eggdrop-data/*

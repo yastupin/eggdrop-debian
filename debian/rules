@@ -17,6 +17,6 @@ override_dh_auto_configure:
 	make config
 
 override_dh_auto_install:
-	make install DEST=$$(pwd)/debian/tmp/usr
-	rm $$(pwd)/debian/tmp/usr/scripts/autobotchk
-	rm $$(pwd)/debian/tmp/usr/scripts/sentinel.tcl
+	make install DEST=$$(pwd)/debian/tmp
+	rm $$(pwd)/debian/tmp/scripts/autobotchk
+	rm $$(pwd)/debian/tmp/scripts/sentinel.tcl
