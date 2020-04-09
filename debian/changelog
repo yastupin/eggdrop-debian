@@ -1,4 +1,4 @@
-eggdrop (1.8.4-1) UNRELEASED; urgency=low
+eggdrop (1.8.4-1) unstable; urgency=low
 
   * New upstream version 1.8.4
   * patches
