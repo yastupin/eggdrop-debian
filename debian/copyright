@@ -1,6 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Contact: EggHeads Development Team <eggheads@eggheads.org>
 Source: http://www.eggheads.org/
+Upstream-Name: Eggdrop
 
 Files: *
 Copyright: 1997 Robey Pointer

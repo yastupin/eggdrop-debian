@@ -2,6 +2,7 @@ eggdrop (1.8.4-2) UNRELEASED; urgency=medium
 
   * Trim trailing whitespace.
   * Set debhelper-compat version in Build-Depends.
+  * Set field Upstream-Name in debian/copyright.
 
  -- Debian Janitor <janitor@jelmer.uk>  Thu, 07 May 2020 04:11:21 +0000
 
