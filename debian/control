@@ -2,7 +2,7 @@ Source: eggdrop
 Section: net
 Priority: optional
 Maintainer: Cédric Barboiron <ced@winkie.fr>
-Build-Depends: tcl8.6-dev, libz-dev, debhelper (>= 12), libssl-dev
+Build-Depends: tcl8.6-dev, libz-dev, debhelper-compat (= 12), libssl-dev
 Standards-Version: 4.3.0
 Homepage: http://www.eggheads.org/
 Vcs-Git: https://github.com/yastupin/eggdrop-debian.git
