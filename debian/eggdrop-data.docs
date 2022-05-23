@@ -2,7 +2,7 @@ AUTHORS
 CONTENTS
 FEATURES
 NEWS
-README
+debian/tmp/README
 THANKS
 UPGRADING
-doc/
+debian/tmp/doc/*

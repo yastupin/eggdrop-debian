@@ -1,2 +1,2 @@
-eggdrop.conf
-eggdrop-basic.conf
+debian/tmp/eggdrop.conf
+debian/tmp/eggdrop-basic.conf

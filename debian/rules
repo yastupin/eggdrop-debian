@@ -4,6 +4,7 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
 
@@ -11,10 +12,11 @@ include /usr/share/dpkg/buildflags.mk
 	dh $@
 
 override_dh_auto_configure:
+	dh_autoreconf
 	dh_auto_configure -- --with-tcllib=/usr/lib/$(DEB_HOST_MULTIARCH)/libtcl8.6.so --with-tclinc=/usr/include/tcl8.6/tcl.h
 	make config
 
 override_dh_auto_install:
-	make install DEST=$$(pwd)/debian/tmp/usr
-	rm $$(pwd)/debian/tmp/usr/scripts/autobotchk
-	rm $$(pwd)/debian/tmp/usr/scripts/sentinel.tcl
+	make install DEST=$$(pwd)/debian/tmp
+	rm $$(pwd)/debian/tmp/scripts/autobotchk
+	rm $$(pwd)/debian/tmp/scripts/sentinel.tcl

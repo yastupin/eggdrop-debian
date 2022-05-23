@@ -1,28 +1,33 @@
-eggdrop (1.8.4-1) UNRELEASED; urgency=low
+eggdrop (1.8.4+repack1-0.1) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * Repack upstream tarball with no file change. This solves the
+    broken upstream tarball signature that causes FTBFS.
+    (Closes: #1000861)
+
+ -- Boyuan Yang <byang@debian.org>  Mon, 23 May 2022 15:04:58 -0400
+
+eggdrop (1.8.4-1) unstable; urgency=low
 
   * New upstream version 1.8.4
   * patches
-    - remove 03openssl_checks (fixed upstream)
+    - SSL support (Closes: #374568)
+    - fix cross build issues (Closes: #928786)
     - refresh patches
   * fix some lintian warnings
-    - use debhelper 10
-    - enable hardening flags
+    - use debhelper 12
+    - enable hardening flags (+all)
     - remove autotools-dev and dh-autoreconf dependencies
+    - update to standards version 4.3.0
+    - add override for compress.so hardening
   * debian/watch
     - use https
     - ignore rc releases in debian/watch
-  * rename NEWS and UPGRADING files
-  * add Vcs-Git and Vcs-Browser to control
-
- -- Cédric Barboiron <ced@winkie.fr>  Sun, 20 Jan 2019 17:39:35 +0100
-
-eggdrop (1.8.0-1) UNRELEASED; urgency=low
-
-  * New upstream release
-    - SSL support (Closes: #374568)
+    - switch to 1.8 directory
   * debian/control:
     - add libssl-dev build dependency
     - mark eggdrop-data as Multi-Arch: foreign
+    - add Vcs-Git and Vcs-Browser to control
   * debian/copyright: fix lintian warnings
   * debian/eggdrop-data.doc updated
   * debian/eggdrop-data.doc-base: updated
@@ -31,25 +36,20 @@ eggdrop (1.8.0-1) UNRELEASED; urgency=low
   * debian/patches:
     - 01use_ldflags, fix_kfreebsd_build: merged
     - gcc-format-string-warnings: removed, fixed upstream
-    - 03openssl_checks: fix openssl detection
   * debian/rules: remove -fgnu89-inline and --no-automatic-dbgsym
   * debian/upstream/signing-key.asc: new upstream key
-  * debian/watch:
-    - use http instead of ftp
-    - switch to 1.8 directory
+  * rename NEWS and UPGRADING files
+  * use dh_autoreconf
 
- -- Cédric Barboiron <ced@winkie.fr>  Tue, 21 Feb 2017 14:03:47 +0100
+ -- Cédric Barboiron <ced@winkie.fr>  Thu, 09 Apr 2020 13:08:10 +0200
 
-eggdrop (1.6.21-4) UNRELEASED; urgency=low
+eggdrop (1.6.21-4) unstable; urgency=low
 
-  * debian/rules: fix build with gcc >= 5
-  * debian/control:
-    - update to standards version 3.9.8
-    - disable automatic dbgsym
-  * debian/copyright: fix dep5-copyright-license-name-not-unique lintian
-    warning
+  * clang-ftbfs.diff:
+    - Fix FTBFS with clang-3.5 (Closes: #757400)
+    - Apply patch from Arthur Marble, thank you!
 
- -- Cédric Barboiron <ced@winkie.fr>  Mon, 20 Feb 2017 11:57:18 +0100
+ -- Cédric Barboiron <ced@winkie.fr>  Mon, 11 Aug 2014 22:21:21 +0200
 
 eggdrop (1.6.21-3) unstable; urgency=low
 
@@ -113,39 +113,39 @@ eggdrop (1.6.21-1) unstable; urgency=low
 eggdrop (1.6.20-2) unstable; urgency=low
 
   * QA upload, set maintainer to Debian QA group
-  * Enable hardened build flags (Closes: #668091)
+  * Enable hardened build flags (Closes: #668091)	
 
  -- Moritz Muehlenhoff <jmm@debian.org>  Sat, 04 Jan 2014 15:53:07 +0100
 
 eggdrop (1.6.20-1) unstable; urgency=high
 
   * NMUs acknowledged; thanks guys!
-
+  
   * Switched to dpkg-source 3.0 (quilt) format.
     - Dropped CDBS's very handy simple-patchsys.mk.
-
+  
   * With a new upstream release comes a pristine tarball (Closes: #550507).
     - debian/patches/00conf_paths.patch: updated.
     - debian/patches/01version.patch: dropped, fixed upstream.
     - debian/patches/02_incompCVE-2007-2807.patch: also fixed.
     - debian/eggdrop-data.docs: updated; some files were relocated.
-
+  
   * debian/compat: debhelper compatibility level bumped to 8, in order to make
     lintian and debhelper itself happy. Build-dependencies updated accordingly.
-
+  
   * debian/control:
     - bumped Standards-Version to 3.9.2, with no changes.
     - made some cosmetic changes to the Maintainer field.
     - added ${misc:Depends} to the dependencies of both packages. Unneeded for
       the time being, but who knows... (Closes: #512501).
-
+  
   * debian/copyright: updated for the 2010 copyright notices.
-
+  
   * debian/patches/01tcl8.5.10.patch: grabbed from upstream CVS in order to fix
     a startup crash caused by unexpected behaviour in Tcl 8.5.10 (which is
     already in testing, hence the urgency). Thanks to thommey, with our sincere
     apologies for lagging behind (Closes: #635274).
-
+  
   * debian/rules:
     - No longer pass --enable-tcl-threads as an extra flag, this is now handled
       differently upstream.
@@ -201,7 +201,7 @@ eggdrop (1.6.18-1) unstable; urgency=low
 
   * New upstream release (Closes: #369678).
     - debian/patches/00conf_paths.patch: updated.
-
+  
   * debian/control:
     - updated maintainer address.
     - replace ${Source-Version} with ${source:Version}. Yay binNMUs!
@@ -218,7 +218,7 @@ eggdrop (1.6.17-3) unstable; urgency=medium
       Thanks to Gustavo Noronha Silva <kov@debian.org>
   * Fixed mistake in README.Debian, once again due to the split up
     Thanks to Martin Braure de Calignon (Closes: #273933)
-
+  
  -- Guilherme de S. Pastore <gpastore@colband.com.br>  Tue, 19 Oct 2004 01:57:51 -0200
 
 eggdrop (1.6.17-2) unstable; urgency=high
@@ -285,7 +285,7 @@ eggdrop (1.6.16-1) unstable; urgency=low
 
 eggdrop (1.6.15-2) unstable; urgency=high
 
-  * Applied official patch to fix share.mod security bug
+  * Applied official patch to fix share.mod security bug 
 
  -- Guilherme de S. Pastore <gpastore@colband.com.br>  Fri, 16 Apr 2004 17:23:37 -0300
 
@@ -448,7 +448,7 @@ eggdrop (1.6.0-2) unstable; urgency=low
   * fixed README.Debian to point to the correct eggdrop.simple.conf.
     (closes: #77919)
   * autobotchk looks for /usr/share/eggdrop/help & /usr/bin/eggdrop
-    instead of $dir/help & $dir/eggdrop. (closes: #77931)
+	  instead of $dir/help & $dir/eggdrop. (closes: #77931)
 
  -- Ian Eure <ieure@debian.org>  Fri, 24 Nov 2000 19:42:36 -0800
 
@@ -458,15 +458,15 @@ eggdrop (1.6.0-1) unstable; urgency=low
   * added Build-Depends (closes: #70292)
   * new maintainer (closes: #76182, #75075, #68067)
   * FHS compliance; binary modules are in /usr/lib/eggdrop/modules,
-    machine-independent data is in /usr/share/eggdrop
+		machine-independent data is in /usr/share/eggdrop
 
  -- Ian Eure <ieure@debian.org>  Fri, 17 Nov 2000 11:43:49 -0800
-
+	
 eggdrop (1.3.28-2) unstable; urgency=low
 
-  * Erm, let's try that again .. should actually work this time.
+  * Erm, let's try that again .. should actually work this time.  
     (Closes: #47779).
-  * Remove *.rej and *.orig files on clean
+  * Remove *.rej and *.orig files on clean 
   * Don't use /usr/doc /and/ /usr/share/doc. (closes: #46562)
 
  -- Edward Brocklesby <ejb@debian.org>  Fri, 22 Oct 1999 19:24:11 +0100
