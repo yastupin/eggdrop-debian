@@ -27,8 +27,6 @@ Package: eggdrop-data
 Architecture: all
 Multi-Arch: foreign
 Depends: ${misc:Depends}
-Breaks: eggdrop (<< 1.6.16-3)
-Replaces: eggdrop (<< 1.6.16-3)
 Description: Architecture independent files for eggdrop
  This package contains all the files that eggdrop places on /usr/share.
  These files are not specific to a single processor architecture once
