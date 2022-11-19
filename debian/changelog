@@ -3,6 +3,7 @@ eggdrop (1.8.4-2) UNRELEASED; urgency=medium
   * Update lintian override info format in d/eggdrop.lintian-overrides on line
     4.
   * Trim trailing whitespace.
+  * Use secure URI in Homepage field.
 
  -- Debian Janitor <janitor@jelmer.uk>  Sat, 19 Nov 2022 08:31:06 -0000
 

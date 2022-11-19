@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Cédric Barboiron <ced@winkie.fr>
 Build-Depends: tcl8.6-dev, libz-dev, debhelper (>= 12), libssl-dev
 Standards-Version: 4.3.0
-Homepage: http://www.eggheads.org/
+Homepage: https://www.eggheads.org/
 Vcs-Git: https://github.com/yastupin/eggdrop-debian.git
 Vcs-Browser: https://github.com/yastupin/eggdrop-debian
 
