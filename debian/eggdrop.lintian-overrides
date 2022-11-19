@@ -1,4 +1,4 @@
 # eggdrop-1.x.xx is a link to eggdrop. manpage eggdrop(1) is present
-eggdrop: binary-without-manpage usr/bin/eggdrop-*
+eggdrop: no-manual-page usr/bin/eggdrop-*
 # hardening flags are passed to the compress mod
-eggdrop: hardening-no-fortify-functions usr/lib/eggdrop/modules/compress.so
+eggdrop: hardening-no-fortify-functions [usr/lib/eggdrop/modules/compress.so]
