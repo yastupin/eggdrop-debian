@@ -1,3 +1,12 @@
+eggdrop (1.8.4+repack1-0.1) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * Repack upstream tarball with no file change. This solves the
+    broken upstream tarball signature that causes FTBFS.
+    (Closes: #1000861)
+
+ -- Boyuan Yang <byang@debian.org>  Mon, 23 May 2022 15:04:58 -0400
+
 eggdrop (1.8.4-1) unstable; urgency=low
 
   * New upstream version 1.8.4
